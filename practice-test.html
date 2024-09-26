@@ -43,6 +43,9 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        .answer-option.selected {
+            background-color: #e0e0e0;
+        }
         .footer {
             background-color: #f0f0f0;
             padding: 10px;
@@ -57,12 +60,17 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        .save-status {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div id="section-title">Section 1, Module 1: Reading and Writing</div>
-        <div class="timer" id="timer">Time remaining</div>
+        <div class="timer" id="timer">Time remaining: <span id="time-left">60:00</span></div>
     </div>
     <div class="main-content">
         <div class="question-text" id="question-text">
@@ -77,10 +85,14 @@
         </div>
     </div>
     <div class="footer">
-        <div id="student-name">Student Name</div>
+        <div>
+            <div id="student-name">Student Name</div>
+            <div class="save-status" id="save-status"></div>
+        </div>
         <div>
             <button class="nav-button" id="back-button">Back</button>
             <button class="nav-button" id="next-button">Next</button>
+            <button class="nav-button" id="clear-progress-button">Clear Progress</button>
         </div>
     </div>
 
@@ -98,6 +110,91 @@
         const userId = getUrlParameter('userId');
         const testId = getUrlParameter('testId');
 
+        // Initialize test state
+        let currentQuestion = 1;
+        let userAnswers = {};
+        let timeLeft = 60 * 60; // 60 minutes in seconds
+
+        // Function to save progress
+        function saveProgress() {
+            const progress = {
+                currentQuestion: currentQuestion,
+                userAnswers: userAnswers,
+                timeLeft: timeLeft
+            };
+            localStorage.setItem(`test_progress_${userId}_${testId}`, JSON.stringify(progress));
+            document.getElementById('save-status').textContent = 'Progress saved';
+            setTimeout(() => {
+                document.getElementById('save-status').textContent = '';
+            }, 2000);
+        }
+
+        // Function to load progress
+        function loadProgress() {
+            const savedProgress = localStorage.getItem(`test_progress_${userId}_${testId}`);
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                currentQuestion = progress.currentQuestion;
+                userAnswers = progress.userAnswers;
+                timeLeft = progress.timeLeft;
+                updateQuestion();
+                updateTimer();
+                console.log('Progress loaded');
+            }
+        }
+
+        // Function to clear progress
+        function clearProgress() {
+            localStorage.removeItem(`test_progress_${userId}_${testId}`);
+            currentQuestion = 1;
+            userAnswers = {};
+            timeLeft = 60 * 60;
+            updateQuestion();
+            updateTimer();
+            console.log('Progress cleared');
+        }
+
+        // Function to update question display
+        function updateQuestion() {
+            document.getElementById('question-number').textContent = currentQuestion;
+            // Here you would typically load the specific question content
+            // For now, we'll just update a placeholder
+            document.getElementById('question-text').innerHTML = `<p>This is question ${currentQuestion}. Content would be loaded here.</p>`;
+            
+            // Update answer options (placeholder implementation)
+            for (let option of ['a', 'b', 'c', 'd']) {
+                const element = document.getElementById(`option-${option}`);
+                element.textContent = `${option.toUpperCase()}. Answer option for question ${currentQuestion}`;
+                element.classList.remove('selected');
+                if (userAnswers[currentQuestion] === option) {
+                    element.classList.add('selected');
+                }
+            }
+        }
+
+        // Function to update timer display
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('time-left').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Timer function
+        function startTimer() {
+            const timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTimer();
+                    saveProgress();
+                } else {
+                    clearInterval(timerInterval);
+                    alert('Time's up! The test has ended.');
+                    // Here you would typically end the test and submit results
+                }
+            }, 1000);
+        }
+
         // Use the parameters to set up the test
         document.addEventListener('DOMContentLoaded', function() {
             if (studentName) {
@@ -105,25 +202,41 @@
             }
             console.log(`Loading test: ${testId} for user: ${userId}`);
 
-            // Here you would typically load the specific test questions based on the testId
-            // For now, we'll just set a placeholder question number
-            document.getElementById('question-number').textContent = '1';
+            loadProgress();
+            startTimer();
+
+            // Set up event listeners for answer options
+            for (let option of ['a', 'b', 'c', 'd']) {
+                document.getElementById(`option-${option}`).addEventListener('click', function() {
+                    userAnswers[currentQuestion] = option;
+                    updateQuestion();
+                    saveProgress();
+                });
+            }
         });
 
-        // Existing event listeners
+        // Event listeners for navigation
         document.getElementById('back-button').addEventListener('click', function() {
-            console.log('Back button clicked');
-            // Function to go to previous question will be implemented here
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                updateQuestion();
+                saveProgress();
+            }
         });
 
         document.getElementById('next-button').addEventListener('click', function() {
-            console.log('Next button clicked');
-            // Function to go to next question will be implemented here
+            // Assuming a total of 10 questions for this example
+            if (currentQuestion < 10) {
+                currentQuestion++;
+                updateQuestion();
+                saveProgress();
+            } else {
+                alert('You've reached the end of the test. Ready to submit?');
+                // Here you would typically implement test submission logic
+            }
         });
 
-        // TODO: Implement timer functionality
-        // TODO: Implement question loading and navigation
-        // TODO: Implement answer selection and tracking
+        document.getElementById('clear-progress-button').addEventListener('click', clearProgress);
     </script>
 </body>
 </html>

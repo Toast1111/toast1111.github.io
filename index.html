@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Prep</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+        }
+        button {
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: block;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #1ed760;
+        }
+        #practiceView {
+            display: none;
+        }
+        #questionLabel {
+            margin-bottom: 20px;
+        }
+        #optionButtons button {
+            background-color: #282828;
+            margin: 5px 0;
+        }
+        #feedbackLabel {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="mainMenu">
+            <h1>SAT Prep</h1>
+            <button onclick="startPractice('Math')">Math Practice</button>
+            <button onclick="startPractice('Verbal')">Verbal Practice</button>
+            <button onclick="startPractice('Writing')">Writing Practice</button>
+        </div>
+        <div id="practiceView">
+            <button id="backButton" onclick="showMainMenu()">Back to Menu</button>
+            <h2 id="practiceTitle"></h2>
+            <p id="questionLabel"></p>
+            <div id="optionButtons"></div>
+            <p id="feedbackLabel"></p>
+            <button id="nextButton" onclick="showQuestion()">Next Question</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPractice = null;
+        let currentQuestion = null;
+        let questionsAnswered = 0;
+        let correctAnswers = 0;
+        const totalQuestions = 10;
+
+        function startPractice(practiceType) {
+            currentPractice = practiceType;
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('practiceView').style.display = 'block';
+            document.getElementById('practiceTitle').textContent = practiceType + " Practice";
+            questionsAnswered = 0;
+            correctAnswers = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (questionsAnswered >= totalQuestions) {
+                finishPractice();
+                return;
+            }
+
+            // This is a placeholder. We'll implement actual question fetching later.
+            currentQuestion = {
+                text: "Sample question " + (questionsAnswered + 1),
+                options: ["Option A", "Option B", "Option C", "Option D"],
+                correctAnswer: "Option A"
+            };
+
+            document.getElementById('questionLabel').textContent = `Question ${questionsAnswered + 1}/${totalQuestions}: ${currentQuestion.text}`;
+            
+            const optionButtonsDiv = document.getElementById('optionButtons');
+            optionButtonsDiv.innerHTML = '';
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                optionButtonsDiv.appendChild(button);
+            });
+
+            document.getElementById('feedbackLabel').textContent = '';
+            document.getElementById('nextButton').style.display = 'none';
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+            if (isCorrect) {
+                document.getElementById('feedbackLabel').textContent = "Correct!";
+                document.getElementById('feedbackLabel').style.color = '#1DB954';
+                correctAnswers++;
+            } else {
+                document.getElementById('feedbackLabel').textContent = "Incorrect. The correct answer is: " + currentQuestion.correctAnswer;
+                document.getElementById('feedbackLabel').style.color = '#FF4136';
+            }
+            
+            questionsAnswered++;
+            document.getElementById('nextButton').style.display = 'block';
+            
+            // Disable all option buttons after an answer is selected
+            document.querySelectorAll('#optionButtons button').forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        function finishPractice() {
+            const score = (correctAnswers / totalQuestions) * 100;
+            alert(`Practice complete! Your score: ${score.toFixed(1)}%`);
+            showMainMenu();
+        }
+
+        function showMainMenu() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('practiceView').style.display = 'none';
+            currentPractice = null;
+            currentQuestion = null;
+        }
+    </script>
+</body>
+</html>

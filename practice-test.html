@@ -85,7 +85,32 @@
     </div>
 
     <script>
-        // Placeholder for future JavaScript functionality
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Get parameters from URL
+        const studentName = getUrlParameter('name');
+        const userId = getUrlParameter('userId');
+        const testId = getUrlParameter('testId');
+
+        // Use the parameters to set up the test
+        document.addEventListener('DOMContentLoaded', function() {
+            if (studentName) {
+                document.getElementById('student-name').textContent = studentName;
+            }
+            console.log(`Loading test: ${testId} for user: ${userId}`);
+
+            // Here you would typically load the specific test questions based on the testId
+            // For now, we'll just set a placeholder question number
+            document.getElementById('question-number').textContent = '1';
+        });
+
+        // Existing event listeners
         document.getElementById('back-button').addEventListener('click', function() {
             console.log('Back button clicked');
             // Function to go to previous question will be implemented here
@@ -95,6 +120,10 @@
             console.log('Next button clicked');
             // Function to go to next question will be implemented here
         });
+
+        // TODO: Implement timer functionality
+        // TODO: Implement question loading and navigation
+        // TODO: Implement answer selection and tracking
     </script>
 </body>
 </html>

@@ -15,9 +15,11 @@
             background-color: #f0f4f8;
             color: #333;
             line-height: 1.6;
+            font-size: 16px;
         }
         .container {
-            max-width: 800px;
+            width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -27,6 +29,7 @@
             align-items: center;
             padding: 1rem 0;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
         .logo {
             color: #4a6ee0;
@@ -60,6 +63,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
         .tab-container {
             display: flex;
@@ -85,6 +89,7 @@
             cursor: pointer;
             border-radius: 20px;
             transition: background-color 0.3s ease;
+            width: 100%;
         }
         button:hover {
             background-color: #3558b2;
@@ -94,10 +99,17 @@
             align-items: center;
             margin-bottom: 1rem;
         }
-        .practice-item img {
+        .practice-item .icon {
+            font-size: 2rem;
+            margin-right: 1rem;
             width: 50px;
             height: 50px;
-            margin-right: 1rem;
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f4f8;
+            border-radius: 25px;
         }
         #practiceView {
             display: none;
@@ -128,6 +140,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
         .progress-bar {
             flex-grow: 1;
@@ -136,6 +149,7 @@
             border-radius: 4px;
             margin: 0 1rem;
             overflow: hidden;
+            min-width: 100px;
         }
         .progress {
             height: 100%;
@@ -143,12 +157,50 @@
             width: 0%;
             transition: width 0.5s ease;
         }
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
             .container {
                 padding: 10px;
             }
             h1 {
                 font-size: 1.5rem;
+            }
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .tab-container {
+                margin-top: 0.5rem;
+            }
+            .practice-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .practice-item .icon {
+                margin-bottom: 0.5rem;
+            }
+            .progress-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .progress-bar {
+                margin: 0.5rem 0;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                font-size: 12px;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+            .logo {
+                font-size: 1.2rem;
+            }
+            .user-info {
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -159,7 +211,7 @@
             <div class="logo">SAT Prep</div>
             <div class="user-info">
                 John Doe
-                <img src="/api/placeholder/40/40" alt="User Avatar">
+                <img src="https://via.placeholder.com/40" alt="User Avatar">
             </div>
         </header>
 
@@ -186,15 +238,15 @@
                     </div>
                 </div>
                 <div class="practice-item">
-                    <img src="/api/placeholder/50/50" alt="Math Icon">
+                    <span class="icon">📐</span>
                     <button onclick="startPractice('Math')">Math Practice</button>
                 </div>
                 <div class="practice-item">
-                    <img src="/api/placeholder/50/50" alt="Verbal Icon">
+                    <span class="icon">📚</span>
                     <button onclick="startPractice('Verbal')">Verbal Practice</button>
                 </div>
                 <div class="practice-item">
-                    <img src="/api/placeholder/50/50" alt="Writing Icon">
+                    <span class="icon">✍️</span>
                     <button onclick="startPractice('Writing')">Writing Practice</button>
                 </div>
             </div>
@@ -218,6 +270,7 @@
     </div>
 
     <script>
+        // The JavaScript remains the same as in the previous version
         let currentPractice = null;
         let currentQuestion = null;
         let questionsAnswered = 0;

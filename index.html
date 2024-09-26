@@ -25,12 +25,6 @@
             display: flex;
             align-items: center;
         }
-        .user-profile img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-left: 10px;
-        }
         .welcome-message {
             font-size: 24px;
             color: #4a90e2;
@@ -63,12 +57,6 @@
             background-color: #4a90e2;
             color: white;
         }
-        .content-box {
-            background-color: #f8f8f8;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
         .practice-items {
             display: flex;
             gap: 20px;
@@ -81,18 +69,26 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        .start-test-btn {
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="logo">SAT Practice</div>
         <div class="user-profile">
-            John Doe
-            <img src="/api/placeholder/30/30" alt="User profile">
+            <span id="user-name">John Doe</span>
         </div>
     </div>
 
-    <div class="welcome-message">Welcome, John! Good luck on test day!</div>
+    <div class="welcome-message">Welcome, <span id="welcome-name">John</span>! Good luck on test day!</div>
 
     <div class="section">
         <div class="section-header">
@@ -102,9 +98,8 @@
                 <span class="tab">Past</span>
             </div>
         </div>
-        <div class="content-box">
-            <p>You Have No Upcoming Tests</p>
-            <p>Tests appear here a few weeks before test day. If you got a paper ticket from your school, sign out and sign in with it.</p>
+        <div id="tests-content">
+            You have no upcoming tests.
         </div>
     </div>
 
@@ -124,8 +119,35 @@
             <div class="practice-item">
                 <h3>Full-Length Practice</h3>
                 <p>Take a complete practice test</p>
+                <button class="start-test-btn" onclick="startPracticeTest()">Start Test</button>
             </div>
         </div>
     </div>
+
+    <script>
+        // Simulated user data (in a real app, this would come from a backend)
+        const userData = {
+            firstName: "John",
+            lastName: "Doe",
+            userId: "12345"
+        };
+
+        // Update user information on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('user-name').textContent = `${userData.firstName} ${userData.lastName}`;
+            document.getElementById('welcome-name').textContent = userData.firstName;
+        });
+
+        function startPracticeTest() {
+            // Generate a unique test ID (in a real app, this might come from a backend)
+            const testId = `SAT-${Date.now()}`;
+
+            // Construct the URL for the practice test page
+            const url = `practice-test.html?name=${encodeURIComponent(userData.firstName)}&userId=${encodeURIComponent(userData.userId)}&testId=${encodeURIComponent(testId)}`;
+
+            // Navigate to the practice test page
+            window.location.href = url;
+        }
+    </script>
 </body>
 </html>

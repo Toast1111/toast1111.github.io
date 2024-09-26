@@ -75,7 +75,7 @@
     </div>
     <div class="main-content">
         <div class="question-text" id="question-text">
-            <p>Loading questions...</p>
+            <p>Loading question...</p>
         </div>
         <div class="answer-section">
             <h3>Question <span id="question-number"></span></h3>
@@ -97,97 +97,82 @@
         </div>
     </div>
 
-    <script type="module">
-        import writing1Questions from './writing1.js';
-        import math1Questions from './math1.js';
-        import writing2Questions from './writing2.js';
-        import math2Questions from './math2.js';
+    <script>
+        console.log("Script started");
 
-        // Combine all questions
-        const allQuestions = [
-            ...writing1Questions,
-            ...math1Questions,
-            ...writing2Questions,
-            ...math2Questions
-        ];
-
-        // Function to get URL parameters
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        class Question {
+            constructor(text, options, correctAnswer, category) {
+                this.text = text;
+                this.options = options;
+                this.correctAnswer = correctAnswer;
+                this.category = category;
+            }
         }
 
-        // Get parameters from URL
-        const studentName = getUrlParameter('name');
-        const userId = getUrlParameter('userId');
-        const testId = getUrlParameter('testId');
+        class SATPractice {
+            constructor() {
+                console.log("Initializing SATPractice");
+                this.questions = [
+                    new Question("What is 2 + 2?", ["3", "4", "5", "6"], "4", "Math"),
+                    new Question("What is 2 + 4?", ["3", "6", "5", "4"], "6", "Math"),
+                    new Question("What is 2 + 6?", ["3", "8", "5", "6"], "8", "Math"),
+                    new Question("What is the opposite of 'benevolent'?", ["Malevolent", "Generous", "Kind", "Giving"], "Malevolent", "Verbal"),
+                    new Question("Which sentence is grammatically correct?", 
+                                ["Its a beautiful day.", "It's a beautiful day.", "Its' a beautiful day.", "It s' a beautiful day."],
+                                "It's a beautiful day.", "Writing")
+                ];
+                console.log(`Initialized with ${this.questions.length} questions`);
+            }
 
-        // Initialize test state
-        let currentQuestion = 1;
+            getQuestion(index) {
+                console.log(`Getting question at index ${index}`);
+                if (index >= 0 && index < this.questions.length) {
+                    return this.questions[index];
+                }
+                console.log("Question index out of bounds");
+                return null;
+            }
+
+            checkAnswer(question, userAnswer) {
+                if (question.correctAnswer === userAnswer) {
+                    return [true, "Correct!"];
+                } else {
+                    return [false, `Incorrect. The correct answer is: ${question.correctAnswer}`];
+                }
+            }
+
+            addQuestion(text, options, correctAnswer, category) {
+                const newQuestion = new Question(text, options, correctAnswer, category);
+                this.questions.push(newQuestion);
+            }
+        }
+
+        const practice = new SATPractice();
+        let currentQuestionIndex = 0;
         let userAnswers = {};
         let timeLeft = 180 * 60; // 180 minutes in seconds
 
-        // Function to save progress
-        function saveProgress() {
-            const progress = {
-                currentQuestion: currentQuestion,
-                userAnswers: userAnswers,
-                timeLeft: timeLeft
-            };
-            localStorage.setItem(`test_progress_${userId}_${testId}`, JSON.stringify(progress));
-            document.getElementById('save-status').textContent = 'Progress saved';
-            setTimeout(() => {
-                document.getElementById('save-status').textContent = '';
-            }, 2000);
-        }
+        function loadQuestion() {
+            console.log(`Loading question at index ${currentQuestionIndex}`);
+            const currentQuestion = practice.getQuestion(currentQuestionIndex);
+            if (currentQuestion) {
+                document.getElementById('question-number').textContent = currentQuestionIndex + 1;
+                document.getElementById('question-text').innerHTML = `<p>${currentQuestion.text}</p>`;
+                
+                currentQuestion.options.forEach((option, index) => {
+                    const element = document.getElementById(`option-${String.fromCharCode(97 + index)}`);
+                    element.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                    element.classList.remove('selected');
+                });
 
-        // Function to load progress
-        function loadProgress() {
-            const savedProgress = localStorage.getItem(`test_progress_${userId}_${testId}`);
-            if (savedProgress) {
-                const progress = JSON.parse(savedProgress);
-                currentQuestion = progress.currentQuestion;
-                userAnswers = progress.userAnswers;
-                timeLeft = progress.timeLeft;
-                updateQuestion();
-                updateTimer();
-                console.log('Progress loaded');
-            }
-        }
-
-        // Function to clear progress
-        function clearProgress() {
-            if (confirm('Are you sure you want to clear all progress? This action cannot be undone.')) {
-                localStorage.removeItem(`test_progress_${userId}_${testId}`);
-                currentQuestion = 1;
-                userAnswers = {};
-                timeLeft = 180 * 60;
-                updateQuestion();
-                updateTimer();
-                console.log('Progress cleared');
-            }
-        }
-
-        // Function to update question display
-        function updateQuestion() {
-            const question = allQuestions[currentQuestion - 1];
-            document.getElementById('question-number').textContent = currentQuestion;
-            document.getElementById('question-text').innerHTML = `<p>${question.text}</p>`;
-            
-            for (let option of ['a', 'b', 'c', 'd']) {
-                const element = document.getElementById(`option-${option}`);
-                const optionText = question.options.find(opt => opt.id === option).text;
-                element.textContent = `${option.toUpperCase()}. ${optionText}`;
-                element.classList.remove('selected');
-                if (userAnswers[currentQuestion] === option) {
-                    element.classList.add('selected');
+                if (userAnswers[currentQuestionIndex]) {
+                    document.getElementById(`option-${userAnswers[currentQuestionIndex]}`).classList.add('selected');
                 }
+            } else {
+                document.getElementById('question-text').innerHTML = '<p>No more questions available.</p>';
             }
         }
 
-        // Function to update timer display
         function updateTimer() {
             const hours = Math.floor(timeLeft / 3600);
             const minutes = Math.floor((timeLeft % 3600) / 60);
@@ -196,7 +181,6 @@
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
-        // Timer function
         function startTimer() {
             const timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
@@ -213,64 +197,101 @@
             }, 1000);
         }
 
-        // Function to submit the test
-        function submitTest() {
-            // Calculate score
-            let score = 0;
-            for (let i = 0; i < allQuestions.length; i++) {
-                if (userAnswers[i + 1] === allQuestions[i].correctAnswer) {
-                    score++;
-                }
-            }
-            
-            alert(`Test submitted! Your score: ${score} out of ${allQuestions.length}`);
-            // Here you would typically send the results to a server
-            console.log('Test submitted', { userId, testId, score, answers: userAnswers });
+        function saveProgress() {
+            const progress = {
+                currentQuestionIndex: currentQuestionIndex,
+                userAnswers: userAnswers,
+                timeLeft: timeLeft
+            };
+            localStorage.setItem('sat_practice_progress', JSON.stringify(progress));
+            document.getElementById('save-status').textContent = 'Progress saved';
+            setTimeout(() => {
+                document.getElementById('save-status').textContent = '';
+            }, 2000);
         }
 
-        // Use the parameters to set up the test
-        document.addEventListener('DOMContentLoaded', function() {
-            if (studentName) {
-                document.getElementById('student-name').textContent = studentName;
+        function loadProgress() {
+            const savedProgress = localStorage.getItem('sat_practice_progress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                currentQuestionIndex = progress.currentQuestionIndex;
+                userAnswers = progress.userAnswers;
+                timeLeft = progress.timeLeft;
+                console.log('Progress loaded');
             }
-            console.log(`Loading test: ${testId} for user: ${userId}`);
+        }
 
-            loadProgress();
-            updateQuestion();
-            startTimer();
+        function clearProgress() {
+            if (confirm('Are you sure you want to clear all progress? This action cannot be undone.')) {
+                localStorage.removeItem('sat_practice_progress');
+                currentQuestionIndex = 0;
+                userAnswers = {};
+                timeLeft = 180 * 60;
+                loadQuestion();
+                updateTimer();
+                console.log('Progress cleared');
+            }
+        }
 
-            // Set up event listeners for answer options
-            for (let option of ['a', 'b', 'c', 'd']) {
-                document.getElementById(`option-${option}`).addEventListener('click', function() {
-                    userAnswers[currentQuestion] = option;
-                    updateQuestion();
+        function submitTest() {
+            let score = 0;
+            practice.questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    score++;
+                }
+            });
+            alert(`Test submitted! Your score: ${score} out of ${practice.questions.length}`);
+            console.log('Test submitted', { score, answers: userAnswers });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM fully loaded");
+            try {
+                loadProgress();
+                loadQuestion();
+                startTimer();
+
+                document.querySelectorAll('.answer-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        const selectedOption = this.id.split('-')[1];
+                        userAnswers[currentQuestionIndex] = selectedOption;
+                        document.querySelectorAll('.answer-option').forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        saveProgress();
+                    });
+                });
+
+                document.getElementById('next-button').addEventListener('click', function() {
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex >= practice.questions.length) {
+                        if (confirm('You've reached the end of the test. Are you ready to submit?')) {
+                            submitTest();
+                        } else {
+                            currentQuestionIndex = practice.questions.length - 1;
+                        }
+                    }
+                    loadQuestion();
                     saveProgress();
                 });
+
+                document.getElementById('back-button').addEventListener('click', function() {
+                    if (currentQuestionIndex > 0) {
+                        currentQuestionIndex--;
+                        loadQuestion();
+                        saveProgress();
+                    }
+                });
+
+                document.getElementById('clear-progress-button').addEventListener('click', clearProgress);
+
+                console.log("All event listeners set up");
+            } catch (error) {
+                console.error("Error during initialization:", error);
+                document.getElementById('question-text').innerHTML = '<p>An error occurred while loading the test. Please refresh the page and try again.</p>';
             }
         });
 
-        // Event listeners for navigation
-        document.getElementById('back-button').addEventListener('click', function() {
-            if (currentQuestion > 1) {
-                currentQuestion--;
-                updateQuestion();
-                saveProgress();
-            }
-        });
-
-        document.getElementById('next-button').addEventListener('click', function() {
-            if (currentQuestion < allQuestions.length) {
-                currentQuestion++;
-                updateQuestion();
-                saveProgress();
-            } else {
-                if (confirm('You've reached the end of the test. Are you ready to submit?')) {
-                    submitTest();
-                }
-            }
-        });
-
-        document.getElementById('clear-progress-button').addEventListener('click', clearProgress);
+        console.log("Script completed");
     </script>
 </body>
 </html>

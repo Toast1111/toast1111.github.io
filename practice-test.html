@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Practice Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .header {
+            background-color: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .timer {
+            font-weight: bold;
+        }
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+        .question-text {
+            flex: 1;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+        }
+        .answer-section {
+            flex: 1;
+            padding: 20px;
+        }
+        .answer-option {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .footer {
+            background-color: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div id="section-title">Section 1, Module 1: Reading and Writing</div>
+        <div class="timer" id="timer">Time remaining</div>
+    </div>
+    <div class="main-content">
+        <div class="question-text" id="question-text">
+            <p>This is where the question text will go. It can include multiple paragraphs or other content as needed.</p>
+        </div>
+        <div class="answer-section">
+            <h3>Question <span id="question-number"></span></h3>
+            <div class="answer-option" id="option-a">A. </div>
+            <div class="answer-option" id="option-b">B. </div>
+            <div class="answer-option" id="option-c">C. </div>
+            <div class="answer-option" id="option-d">D. </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div id="student-name">Student Name</div>
+        <div>
+            <button class="nav-button" id="back-button">Back</button>
+            <button class="nav-button" id="next-button">Next</button>
+        </div>
+    </div>
+
+    <script>
+        // Placeholder for future JavaScript functionality
+        document.getElementById('back-button').addEventListener('click', function() {
+            console.log('Back button clicked');
+            // Function to go to previous question will be implemented here
+        });
+
+        document.getElementById('next-button').addEventListener('click', function() {
+            console.log('Next button clicked');
+            // Function to go to next question will be implemented here
+        });
+    </script>
+</body>
+</html>

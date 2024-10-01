@@ -1,6 +1,3 @@
-// popup.js
-
-// Add styles for the popup
 const style = document.createElement('style');
 style.textContent = `
 .popup {

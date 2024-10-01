@@ -1,252 +1,190 @@
-// verbal-questions.js
-const verbalQuestions = [
-    {
-        text: "Choose the word that best completes the sentence: The scientist's _____ approach to the experiment ensured that all variables were carefully controlled.",
-        options: ["haphazard", "methodical", "frivolous", "ambiguous"],
-        correctAnswer: "methodical"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'benevolent':",
-        options: ["malevolent", "beneficent", "munificent", "magnanimous"],
-        correctAnswer: "malevolent"
-    },
-    {
-        text: "Choose the best synonym for 'enigmatic':",
-        options: ["mysterious", "transparent", "obvious", "simple"],
-        correctAnswer: "mysterious"
-    },
-    {
-        text: "In the context of the sentence 'The politician's speech was full of empty rhetoric', what does 'rhetoric' most likely mean?",
-        options: ["persuasive language", "truthful statements", "scientific facts", "mathematical proofs"],
-        correctAnswer: "persuasive language"
-    },
-    {
-        text: "Select the word that best fits the analogy: Book is to Reader as Painting is to _____",
-        options: ["Artist", "Viewer", "Gallery", "Brush"],
-        correctAnswer: "Viewer"
-    },
-    {
-        text: "Choose the word that best completes the sentence: Despite his _____ manner, the detective was actually quite observant and astute.",
-        options: ["perceptive", "obtuse", "nonchalant", "vigilant"],
-        correctAnswer: "nonchalant"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'frugal':",
-        options: ["extravagant", "thrifty", "economical", "prudent"],
-        correctAnswer: "extravagant"
-    },
-    {
-        text: "Choose the best synonym for 'ubiquitous':",
-        options: ["omnipresent", "rare", "unique", "sporadic"],
-        correctAnswer: "omnipresent"
-    },
-    {
-        text: "In the context of the sentence 'The author's prose was known for its lucidity', what does 'lucidity' most likely mean?",
-        options: ["clarity", "complexity", "verbosity", "ambiguity"],
-        correctAnswer: "clarity"
-    },
-    {
-        text: "Select the word that best fits the analogy: Oasis is to Desert as _____ is to Ocean",
-        options: ["Wave", "Ship", "Island", "Fish"],
-        correctAnswer: "Island"
-    },
-    {
-        text: "Choose the word that best completes the sentence: The company's _____ approach to innovation led to groundbreaking products that revolutionized the industry.",
-        options: ["conventional", "orthodox", "traditional", "avant-garde"],
-        correctAnswer: "avant-garde"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'candid':",
-        options: ["guarded", "forthright", "sincere", "frank"],
-        correctAnswer: "guarded"
-    },
-    {
-        text: "Choose the best synonym for 'ephemeral':",
-        options: ["transient", "enduring", "permanent", "everlasting"],
-        correctAnswer: "transient"
-    },
-    {
-        text: "In the context of the sentence 'The diplomat's tacit approval was enough to proceed with negotiations', what does 'tacit' most likely mean?",
-        options: ["implied", "explicit", "vocal", "written"],
-        correctAnswer: "implied"
-    },
-    {
-        text: "Select the word that best fits the analogy: Flame is to Fire as _____ is to Ocean",
-        options: ["Shore", "Wave", "Fish", "Boat"],
-        correctAnswer: "Wave"
-    },
-    {
-        text: "Choose the word that best completes the sentence: The professor's _____ lecture style often left students confused and struggling to grasp key concepts.",
-        options: ["lucid", "abstruse", "transparent", "coherent"],
-        correctAnswer: "abstruse"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'altruistic':",
-        options: ["selfish", "benevolent", "philanthropic", "charitable"],
-        correctAnswer: "selfish"
-    },
-    {
-        text: "Choose the best synonym for 'surreptitious':",
-        options: ["clandestine", "obvious", "overt", "apparent"],
-        correctAnswer: "clandestine"
-    },
-    {
-        text: "In the context of the sentence 'The CEO's perfunctory apology did little to assuage public anger', what does 'perfunctory' most likely mean?",
-        options: ["insincere", "heartfelt", "genuine", "profound"],
-        correctAnswer: "insincere"
-    },
-    {
-        text: "Select the word that best fits the analogy: Light is to Dark as Sound is to _____",
-        options: ["Loud", "Music", "Silence", "Noise"],
-        correctAnswer: "Silence"
-    },
-    {
-        text: "Choose the word that best completes the sentence: The critic's _____ review of the film was filled with lavish praise and superlatives.",
-        options: ["scathing", "neutral", "ambivalent", "laudatory"],
-        correctAnswer: "laudatory"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'verbose':",
-        options: ["concise", "loquacious", "garrulous", "prolix"],
-        correctAnswer: "concise"
-    },
-    {
-        text: "Choose the best synonym for 'amalgamate':",
-        options: ["separate", "divide", "merge", "isolate"],
-        correctAnswer: "merge"
-    },
-    {
-        text: "In the context of the sentence 'The pandemic had a deleterious effect on small businesses', what does 'deleterious' most likely mean?",
-        options: ["harmful", "beneficial", "neutral", "insignificant"],
-        correctAnswer: "harmful"
-    },
-    {
-        text: "Select the word that best fits the analogy: Pen is to Writer as Brush is to _____",
-        options: ["Paint", "Canvas", "Artist", "Easel"],
-        correctAnswer: "Artist"
-    },
-    {
-        text: "Choose the word that best completes the sentence: The politician's _____ remarks offended many voters and damaged his campaign.",
-        options: ["diplomatic", "tactful", "innocuous", "inflammatory"],
-        correctAnswer: "inflammatory"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'exacerbate':",
-        options: ["ameliorate", "aggravate", "worsen", "intensify"],
-        correctAnswer: "ameliorate"
-    },
-    {
-        text: "Choose the best synonym for 'perfidious':",
-        options: ["loyal", "faithful", "treacherous", "honest"],
-        correctAnswer: "treacherous"
-    },
-    {
-        text: "In the context of the sentence 'The lawyer's specious argument failed to convince the jury', what does 'specious' most likely mean?",
-        options: ["valid", "sound", "misleading", "truthful"],
-        correctAnswer: "misleading"
-    },
-    {
-        text: "Select the word that best fits the analogy: Tree is to Forest as Star is to _____",
-        options: ["Sky", "Night", "Galaxy", "Moon"],
-        correctAnswer: "Galaxy"
-    },
-    {
-        text: "Choose the word that best completes the sentence: The documentary provided a(n) _____ look at the life of the reclusive artist, revealing many previously unknown details.",
-        options: ["superficial", "cursory", "comprehensive", "brief"],
-        correctAnswer: "comprehensive"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'magnanimous':",
-        options: ["generous", "petty", "benevolent", "noble"],
-        correctAnswer: "petty"
-    },
-    {
-        text: "Choose the best synonym for 'equivocate':",
-        options: ["clarify", "elucidate", "prevaricate", "explain"],
-        correctAnswer: "prevaricate"
-    },
-    {
-        text: "In the context of the sentence 'The company's inexorable decline led to its eventual bankruptcy', what does 'inexorable' most likely mean?",
-        options: ["reversible", "stoppable", "preventable", "unstoppable"],
-        correctAnswer: "unstoppable"
-    },
-    {
-        text: "Select the word that best fits the analogy: Leaf is to Tree as Page is to _____",
-        options: ["Paper", "Book", "Pen", "Writer"],
-        correctAnswer: "Book"
-    },
-    {
-        text: "Choose the word that best completes the sentence: The scientist's _____ research methodology ensured that even minor details were not overlooked.",
-        options: ["careless", "meticulous", "haphazard", "cursory"],
-        correctAnswer: "meticulous"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'pragmatic':",
-        options: ["practical", "realistic", "idealistic", "sensible"],
-        correctAnswer: "idealistic"
-    },
-    {
-        text: "Choose the best synonym for 'obfuscate':",
-        options: ["clarify", "elucidate", "obscure", "illuminate"],
-        correctAnswer: "obscure"
-    },
-    {
-        text: "In the context of the sentence 'The novel's denouement left many readers unsatisfied', what does 'denouement' most likely mean?",
-        options: ["beginning", "climax", "conclusion", "setting"],
-        correctAnswer: "conclusion"
-    },
-    {
-        text: "Select the word that best fits the analogy: Carpenter is to Wood as Sculptor is to _____",
-        options: ["Paint", "Clay", "Brush", "Canvas"],
-        correctAnswer: "Clay"
-    },
-    {
-        text: "Choose the word that best completes the sentence: The CEO's _____ leadership style fostered creativity and innovation within the company.",
-        options: ["authoritarian", "laissez-faire", "autocratic", "dictatorial"],
-        correctAnswer: "laissez-faire"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'avarice':",
-        options: ["greed", "generosity", "covetousness", "acquisitiveness"],
-        correctAnswer: "generosity"
-    },
-    {
-        text: "Choose the best synonym for 'mellifluous':",
-        options: ["harsh", "discordant", "cacophonous", "melodious"],
-        correctAnswer: "melodious"
-    },
-    {
-        text: "In the context of the sentence 'The politician's equivocal stance on the issue frustrated voters', what does 'equivocal' most likely mean?",
-        options: ["clear", "ambiguous", "definite", "straightforward"],
-        correctAnswer: "ambiguous"
-    },
-    {
-        text: "Select the word that best fits the analogy: Symptom is to Disease as Clue is to _____",
-        options: ["Detective", "Mystery", "Crime", "Evidence"],
-        correctAnswer: "Mystery"
-    },
-    {
-        text: "Choose the word that best completes the sentence: The journalist's _____ reporting on the scandal earned her both praise and criticism.",
-        options: ["biased", "impartial", "prejudiced", "subjective"],
-        correctAnswer: "impartial"
-    },
-    {
-        text: "Select the word that is most nearly opposite in meaning to 'euphemism':",
-        options: ["understatement", "exaggeration", "dysphemism", "metaphor"],
-        correctAnswer: "dysphemism"
-    },
-    {
-        text: "Choose the best synonym for 'quintessential':",
-        options: ["atypical", "unusual", "exemplary", "unconventional"],
-        correctAnswer: "exemplary"
-    },
-    {
-        text: "In the context of the sentence 'The old building was a vestige of the city's industrial past', what does 'vestige' most likely mean?",
-        options: ["remnant", "centerpiece", "foundation", "pinnacle"],
-        correctAnswer: "remnant"
-    },
-    {
-        text: "Select the word that best fits the analogy: Hesitation is to Confidence as Drought is to _____",
-        options: ["Rain", "Abundance", "Scarcity", "Flood"],
-        correctAnswer: "Abundance"
-    }
+import random
+
+class VerbalQuestion:
+    def __init__(self, text, options, correct_answer, explanation):
+        self.text = text
+        self.options = options
+        self.correct_answer = correct_answer
+        self.explanation = explanation
+
+class VerbalPractice:
+    def __init__(self):
+        self.questions = [
+            VerbalQuestion(
+                "Choose the word that best completes the sentence: The scientist's _____ approach to the experiment ensured that all variables were carefully controlled.",
+                ["haphazard", "methodical", "frivolous", "ambiguous"],
+                "methodical",
+                "'Methodical' means done in a careful, systematic way, which fits the context of a scientist controlling variables in an experiment."
+            ),
+            VerbalQuestion(
+                "Select the sentence that contains a grammar error:",
+                [
+                    "The team celebrated its victory with enthusiasm.",
+                    "Neither of the candidates were prepared for the debate.",
+                    "The museum's new exhibit features works by local artists.",
+                    "She speaks three languages fluently: English, Spanish, and French."
+                ],
+                "Neither of the candidates were prepared for the debate.",
+                "The correct form should be 'Neither of the candidates was prepared for the debate.' 'Neither' is singular and requires a singular verb."
+            ),
+            VerbalQuestion(
+                "Choose the word that is most nearly opposite in meaning to 'verbose':",
+                ["concise", "loquacious", "eloquent", "articulate"],
+                "concise",
+                "'Verbose' means using more words than necessary. 'Concise' means expressing much in few words, which is the opposite of verbose."
+            ),
+            VerbalQuestion(
+                "Select the word or phrase that best completes the sentence: Despite his reputation for being _____, the professor's lecture was surprisingly clear and easy to follow.",
+                ["lucid", "abstruse", "transparent", "perspicuous"],
+                "abstruse",
+                "'Abstruse' means difficult to understand, which contrasts with the surprising clarity of the lecture, creating the intended irony in the sentence."
+            ),
+            VerbalQuestion(
+                "Choose the word that best completes the sentence: The diplomat's _____ remarks offended many of the conference attendees, leading to a tense atmosphere during subsequent negotiations.",
+                ["tactful", "prudent", "injudicious", "discreet"],
+                "injudicious",
+                "'Injudicious' means showing poor judgment, which fits the context of remarks that caused offense and tension."
+            ),
+            VerbalQuestion(
+                "Identify the sentence with correct punctuation:",
+                [
+                    "The company's new policy affects not only employees, but also their families.",
+                    "The company's new policy affects not only employees but also their families.",
+                    "The company's new policy affects not only employees but, also their families.",
+                    "The company's new policy affects not only employees but also, their families."
+                ],
+                "The company's new policy affects not only employees but also their families.",
+                "In the 'not only... but also' construction, no comma is needed before 'but also' when it's followed by a phrase rather than an independent clause."
+            ),
+            VerbalQuestion(
+                "Choose the word that best completes the sentence: The politician's _____ stance on environmental issues made it difficult for voters to understand his true position.",
+                ["unequivocal", "ambivalent", "steadfast", "resolute"],
+                "ambivalent",
+                "'Ambivalent' means having mixed feelings or contradictory ideas, which fits the context of a stance that is difficult to understand."
+            ),
+            VerbalQuestion(
+                "Select the sentence that uses parallel structure correctly:",
+                [
+                    "The CEO likes to start his day by checking emails, a quick jog, and having breakfast.",
+                    "The CEO likes to start his day by checking emails, jogging, and eating breakfast.",
+                    "The CEO likes to start his day by checking emails, to jog quickly, and has breakfast.",
+                    "The CEO likes to start his day by checking emails, jogs, and eats breakfast."
+                ],
+                "The CEO likes to start his day by checking emails, jogging, and eating breakfast.",
+                "This sentence maintains parallel structure by using gerunds (checking, jogging, eating) for all three activities."
+            ),
+            VerbalQuestion(
+                "Choose the word that is most nearly similar in meaning to 'ephemeral':",
+                ["eternal", "transient", "enduring", "permanent"],
+                "transient",
+                "'Ephemeral' means lasting for a very short time. 'Transient' also means lasting for a short time or impermanent, making it the closest in meaning."
+            ),
+            VerbalQuestion(
+                "Identify the sentence with the correct use of a semicolon:",
+                [
+                    "The museum houses artifacts from ancient civilizations; including Greek, Roman, and Egyptian.",
+                    "The museum houses artifacts from ancient civilizations, including Greek, Roman, and Egyptian.",
+                    "The museum houses artifacts from ancient civilizations; it includes Greek, Roman, and Egyptian pieces.",
+                    "The museum houses artifacts from ancient civilizations; including Greek, Roman, and Egyptian pieces."
+                ],
+                "The museum houses artifacts from ancient civilizations; it includes Greek, Roman, and Egyptian pieces.",
+                "A semicolon is correctly used to join two independent clauses without a coordinating conjunction."
+            ),
+            VerbalQuestion(
+                "Choose the word that best completes the sentence: The critic's _____ review of the novel was so harsh that the author considered abandoning his writing career.",
+                ["laudatory", "scathing", "impartial", "objective"],
+                "scathing",
+                "'Scathing' means severely critical or harsh, which fits the context of a review that deeply discouraged the author."
+            ),
+            VerbalQuestion(
+                "Select the sentence with the correct use of the word 'whom':",
+                [
+                    "Whom should I contact regarding the job application?",
+                    "Whom is responsible for this project?",
+                    "The manager, whom is very experienced, will lead the team.",
+                    "I don't know whom to trust in this situation."
+                ],
+                "Whom should I contact regarding the job application?",
+                "'Whom' is correctly used as the object of the verb 'contact' in this sentence. It's the objective case of 'who'."
+            ),
+            VerbalQuestion(
+                "Choose the word that is most nearly opposite in meaning to 'altruistic':",
+                ["selfless", "benevolent", "philanthropic", "egocentric"],
+                "egocentric",
+                "'Altruistic' means showing selfless concern for the well-being of others. 'Egocentric', meaning self-centered, is the opposite."
+            ),
+            VerbalQuestion(
+                "Identify the sentence with correct subject-verb agreement:",
+                [
+                    "The flock of birds were flying south for the winter.",
+                    "The flock of birds was flying south for the winter.",
+                    "The flock of birds are flying south for the winter.",
+                    "The flock of birds fly south for the winter."
+                ],
+                "The flock of birds was flying south for the winter.",
+                "The subject is 'flock' (singular), not 'birds', so it requires a singular verb 'was'."
+            ),
+            VerbalQuestion(
+                "Choose the word that best completes the sentence: Despite the teacher's _____ explanation, many students still struggled to grasp the complex concept.",
+                ["abstruse", "lucid", "opaque", "ambiguous"],
+                "lucid",
+                "'Lucid' means clear and easy to understand, which contrasts with the students' difficulty, emphasizing the complexity of the concept rather than the quality of the explanation."
+            ),
+            VerbalQuestion(
+                "Select the sentence with the correct use of the possessive form:",
+                [
+                    "The children's toys were scattered across the room.",
+                    "The childrens' toys were scattered across the room.",
+                    "The childrens toys were scattered across the room.",
+                    "The children toys were scattered across the room."
+                ],
+                "The children's toys were scattered across the room.",
+                "For irregular plural nouns like 'children' that don't end in 's', add 's to form the possessive."
+            ),
+            VerbalQuestion(
+                "Choose the word that is most nearly similar in meaning to 'cacophony':",
+                ["harmony", "melody", "dissonance", "symphony"],
+                "dissonance",
+                "'Cacophony' refers to a harsh, discordant mixture of sounds. 'Dissonance' also refers to a lack of harmony or harsh sound, making it the closest in meaning."
+            ),
+            VerbalQuestion(
+                "Identify the sentence with the correct use of the word 'fewer':",
+                [
+                    "There are fewer people at the concert than I expected.",
+                    "There is fewer traffic on the roads today.",
+                    "I have fewer money in my account than I thought.",
+                    "The recipe calls for fewer sugar than usual."
+                ],
+                "There are fewer people at the concert than I expected.",
+                "'Fewer' is used with countable nouns like 'people'. The other sentences should use 'less' for uncountable nouns."
+            ),
+            VerbalQuestion(
+                "Choose the word that best completes the sentence: The politician's speech was filled with _____ statements, making it difficult for fact-checkers to verify his claims.",
+                ["verifiable", "ambiguous", "precise", "unequivocal"],
+                "ambiguous",
+                "'Ambiguous' means open to more than one interpretation, which fits the context of statements that are difficult to verify."
+            ),
+            VerbalQuestion(
+                "Select the sentence with the correct use of the subjunctive mood:",
+                [
+                    "I wish I was taller.",
+                    "I wish I were taller.",
+                    "I wish I am taller.",
+                    "I wish I will be taller."
+                ],
+                "I wish I were taller.",
+                "The subjunctive mood is used to express wishes or hypothetical situations. 'Were' is the correct subjunctive form for all persons in this context."
+            )
+        ]
+
+    def get_question(self):
+        return random.choice(self.questions)
+
+    def check_answer(self, question, user_answer):
+        is_correct = question.correct_answer == user_answer
+        return is_correct, question.explanation
+
+# You can add more methods here as needed, such as:
+# - get_all_questions()
+# - add_question(text, options, correct_answer, explanation)
+# - remove_question(question)

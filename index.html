@@ -157,6 +157,20 @@
             width: 0%;
             transition: width 0.5s ease;
         }
+        .passage-container {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .question-number {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
         @media (max-width: 768px) {
             body {
                 font-size: 14px;
@@ -325,11 +339,29 @@
             }
 
             const question = currentQuestions[currentQuestionIndex];
+            const questionView = document.getElementById('practiceView');
+            
+            // Clear previous question content
+            document.getElementById('questionLabel').textContent = '';
+            document.getElementById('optionButtons').innerHTML = '';
+            
+            // Add question number
+            const questionNumberEl = document.createElement('div');
+            questionNumberEl.className = 'question-number';
+            questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+            questionView.insertBefore(questionNumberEl, document.getElementById('questionLabel'));
+
+            if (question.hasPassage) {
+                // Create and add passage container
+                const passageContainer = document.createElement('div');
+                passageContainer.className = 'passage-container';
+                passageContainer.textContent = question.passage;
+                questionView.insertBefore(passageContainer, document.getElementById('questionLabel'));
+            }
+
             document.getElementById('questionLabel').textContent = question.text;
-            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
             
             const optionButtonsDiv = document.getElementById('optionButtons');
-            optionButtonsDiv.innerHTML = '';
             question.options.forEach((option, index) => {
                 const button = document.createElement('button');
                 button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
@@ -363,6 +395,12 @@
             });
 
             updateProgressBar();
+            
+            // Remove passage and question number after answering
+            const passageContainer = document.querySelector('.passage-container');
+            if (passageContainer) passageContainer.remove();
+            const questionNumber = document.querySelector('.question-number');
+            if (questionNumber) questionNumber.remove();
         }
 
         function updateProgressBar() {
@@ -397,12 +435,34 @@
             showMainMenu();
         }
 
-        function showMainMenu() {
+     function showMainMenu() {
             document.getElementById('mainMenu').style.display = 'block';
             document.getElementById('practiceView').style.display = 'none';
             currentPractice = null;
             currentQuestions = [];
             currentQuestionIndex = 0;
+            
+            // Clean up any leftover passage or question number elements
+            const passageContainer = document.querySelector('.passage-container');
+            if (passageContainer) passageContainer.remove();
+            const questionNumber = document.querySelector('.question-number');
+            if (questionNumber) questionNumber.remove();
+
+            // Reset progress bar
+            document.getElementById('progressBar').style.width = '0%';
+
+            // Clear any remaining feedback
+            document.getElementById('feedbackLabel').textContent = '';
+
+            // Reset timer display
+            document.getElementById('timeRemaining').textContent = '10:00';
+
+            // Clear question label and option buttons
+            document.getElementById('questionLabel').textContent = '';
+            document.getElementById('optionButtons').innerHTML = '';
+
+            // Hide next button
+            document.getElementById('nextButton').style.display = 'none';
         }
     </script>
 </body>

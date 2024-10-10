@@ -5,6 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAT Prep - Writing Practice</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .writing-container {
+            display: flex;
+            gap: 20px;
+        }
+        .passage-section {
+            flex: 1;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .question-section {
+            flex: 1;
+        }
+        .highlight {
+            background-color: #ffff00;
+        }
+        .underline {
+            text-decoration: underline;
+        }
+        #optionButtons button {
+            text-align: left;
+            white-space: normal;
+            height: auto;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -26,10 +56,15 @@
                 </div>
                 <span id="timeRemaining"></span>
             </div>
-            <p id="questionLabel"></p>
-            <div id="optionButtons"></div>
-            <p id="feedbackLabel"></p>
-            <button id="nextButton">Next Question</button>
+            <div class="writing-container">
+                <div class="passage-section" id="passageContainer"></div>
+                <div class="question-section">
+                    <p id="questionLabel"></p>
+                    <div id="optionButtons"></div>
+                    <p id="feedbackLabel"></p>
+                    <button id="nextButton" class="button">Next Question</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -41,6 +76,7 @@
         const totalQuestions = 5;
         let timeRemaining = 600; // 10 minutes in seconds
         let timerInterval;
+        let currentPassage = "";
 
         function initializePractice() {
             currentQuestions = shuffleArray(writingQuestions).slice(0, totalQuestions);
@@ -72,11 +108,13 @@
             
             document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
 
-            if (question.hasPassage) {
-                const passageContainer = document.createElement('div');
-                passageContainer.className = 'passage-container';
-                passageContainer.textContent = question.passage;
-                document.getElementById('practiceView').insertBefore(passageContainer, document.getElementById('questionLabel'));
+            if (question.passage && question.passage !== currentPassage) {
+                currentPassage = question.passage;
+                displayPassage(currentPassage);
+            }
+
+            if (question.highlightRange) {
+                highlightPassagePortion(question.highlightRange);
             }
 
             document.getElementById('questionLabel').textContent = question.text;
@@ -84,7 +122,7 @@
             const optionButtonsDiv = document.getElementById('optionButtons');
             question.options.forEach((option, index) => {
                 const button = document.createElement('button');
-                button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                button.innerHTML = `${String.fromCharCode(65 + index)}. ${formatOption(option)}`;
                 button.onclick = () => checkAnswer(option);
                 optionButtonsDiv.appendChild(button);
             });
@@ -92,6 +130,25 @@
             document.getElementById('feedbackLabel').textContent = '';
             document.getElementById('nextButton').style.display = 'none';
             updateProgressBar();
+        }
+
+        function displayPassage(passage) {
+            const passageContainer = document.getElementById('passageContainer');
+            passageContainer.innerHTML = passage;
+        }
+
+        function highlightPassagePortion(range) {
+            const passageContainer = document.getElementById('passageContainer');
+            const passageText = passageContainer.innerHTML;
+            const highlightedText = passageText.substring(0, range[0]) +
+                '<span class="highlight">' + passageText.substring(range[0], range[1]) + '</span>' +
+                passageText.substring(range[1]);
+            passageContainer.innerHTML = highlightedText;
+        }
+
+        function formatOption(option) {
+            // This function can format options with underlines or other styling as needed
+            return option.replace(/\[(.+?)\]/g, '<span class="underline">$1</span>');
         }
 
         function checkAnswer(selectedAnswer) {
@@ -114,9 +171,6 @@
             });
 
             updateProgressBar();
-            
-            const passageContainer = document.querySelector('.passage-container');
-            if (passageContainer) passageContainer.remove();
         }
 
         function updateProgressBar() {

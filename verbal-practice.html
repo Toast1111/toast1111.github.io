@@ -26,10 +26,11 @@
                 </div>
                 <span id="timeRemaining"></span>
             </div>
+            <div id="passageContainer"></div>
             <p id="questionLabel"></p>
             <div id="optionButtons"></div>
             <p id="feedbackLabel"></p>
-            <button id="nextButton">Next Question</button>
+            <button id="nextButton" class="button">Next Question</button>
         </div>
     </div>
 
@@ -69,14 +70,14 @@
             
             document.getElementById('questionLabel').textContent = '';
             document.getElementById('optionButtons').innerHTML = '';
+            document.getElementById('passageContainer').innerHTML = '';
             
             document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
 
             if (question.hasPassage) {
-                const passageContainer = document.createElement('div');
+                const passageContainer = document.getElementById('passageContainer');
                 passageContainer.className = 'passage-container';
                 passageContainer.textContent = question.passage;
-                document.getElementById('practiceView').insertBefore(passageContainer, document.getElementById('questionLabel'));
             }
 
             document.getElementById('questionLabel').textContent = question.text;
@@ -114,9 +115,6 @@
             });
 
             updateProgressBar();
-            
-            const passageContainer = document.querySelector('.passage-container');
-            if (passageContainer) passageContainer.remove();
         }
 
         function updateProgressBar() {

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Prep - Verbal Practice</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">SAT Prep</div>
+            <div class="user-info">
+                John Doe
+                <img src="https://via.placeholder.com/40" alt="User Avatar">
+            </div>
+        </header>
+
+        <div id="practiceView" class="card">
+            <a href="index.html" class="button" id="backButton">Back to Menu</a>
+            <h2 id="practiceTitle">Verbal Practice</h2>
+            <div class="progress-container">
+                <span id="questionNumber"></span>
+                <div class="progress-bar">
+                    <div id="progressBar" class="progress"></div>
+                </div>
+                <span id="timeRemaining"></span>
+            </div>
+            <p id="questionLabel"></p>
+            <div id="optionButtons"></div>
+            <p id="feedbackLabel"></p>
+            <button id="nextButton">Next Question</button>
+        </div>
+    </div>
+
+    <script src="verbal-questions.js"></script>
+    <script src="practice-logic.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initializePractice('Verbal');
+        });
+    </script>
+</body>
+</html>

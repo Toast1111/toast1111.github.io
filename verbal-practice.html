@@ -34,11 +34,27 @@
     </div>
 
     <script src="verbal-questions.js"></script>
-    <script src="practice-logic.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            initializePractice('Verbal');
-        });
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        const totalQuestions = 5;
+        let timeRemaining = 600; // 10 minutes in seconds
+        let timerInterval;
+
+        function initializePractice() {
+            currentQuestions = shuffleArray(verbalQuestions).slice(0, totalQuestions);
+            updateProgressBar();
+            startTimer();
+            showQuestion();
+
+            document.getElementById('nextButton').addEventListener('click', showQuestion);
+        }
+
+        // The rest of the functions (shuffleArray, showQuestion, checkAnswer, etc.) remain the same as in the math practice page
+        // ...
+
+        document.addEventListener('DOMContentLoaded', initializePractice);
     </script>
 </body>
 </html>

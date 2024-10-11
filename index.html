@@ -171,6 +171,33 @@
             font-size: 1.2rem;
             margin-bottom: 0.5rem;
         }
+        /* Calculator styles */
+        #dosCalculator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #000;
+            color: #0f0;
+            padding: 10px;
+            border: 2px solid #0f0;
+            font-family: 'Courier New', monospace;
+            display: none;
+        }
+        #calculatorDisplay {
+            background-color: #222;
+            padding: 5px;
+            margin-bottom: 10px;
+            text-align: right;
+        }
+        #dosCalculator button {
+            width: 40px;
+            height: 40px;
+            margin: 2px;
+            background-color: #333;
+            color: #0f0;
+            border: 1px solid #0f0;
+            cursor: pointer;
+        }
         @media (max-width: 768px) {
             body {
                 font-size: 14px;
@@ -280,6 +307,7 @@
             <div id="optionButtons"></div>
             <p id="feedbackLabel"></p>
             <button id="nextButton" onclick="showQuestion()">Next Question</button>
+            <button id="toggleCalculator" onclick="toggleCalculator()">Toggle Calculator</button>
         </div>
     </div>
 
@@ -287,6 +315,7 @@
     <script src="math-questions.js"></script>
     <script src="verbal-questions.js"></script>
     <script src="writing-questions.js"></script>
+    <script src="dos-calculator.js"></script>
 
     <script>
         let currentPractice = null;
@@ -322,6 +351,10 @@
             updateProgressBar();
             startTimer();
             showQuestion();
+
+            // Show or hide the calculator toggle button based on practice type
+            document.getElementById('toggleCalculator').style.display = 
+                practiceType === 'Math' ? 'block' : 'none';
         }
 
         function shuffleArray(array) {
@@ -435,7 +468,7 @@
             showMainMenu();
         }
 
-     function showMainMenu() {
+        function showMainMenu() {
             document.getElementById('mainMenu').style.display = 'block';
             document.getElementById('practiceView').style.display = 'none';
             currentPractice = null;
@@ -463,6 +496,14 @@
 
             // Hide next button
             document.getElementById('nextButton').style.display = 'none';
+
+            // Hide calculator
+            document.getElementById('dosCalculator').style.display = 'none';
+        }
+
+        function toggleCalculator() {
+            const calculator = document.getElementById('dosCalculator');
+            calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
         }
     </script>
     <script src="popup.js"></script>

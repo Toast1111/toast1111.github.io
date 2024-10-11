@@ -96,5 +96,25 @@ function addToggleButton() {
     }
 }
 
+function addToggleButton() {
+    console.log("Attempting to add the toggle button...");
+    const userInfo = document.querySelector('.user-info');
+    if (userInfo) {
+        const toggleButton = document.createElement('button');
+        toggleButton.textContent = '🖩';
+        toggleButton.onclick = toggleCalculator;
+        toggleButton.style.cssText = `
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin-left: 10px;
+        `;
+        userInfo.appendChild(toggleButton);
+    } else {
+        console.error('User info element not found');
+    }
+}
+
 // Call this function when the page loads
 window.addEventListener('load', addToggleButton);

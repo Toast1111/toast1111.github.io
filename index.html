@@ -2,55 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAT Prep</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --primary-color: #4a6ee0;
+            --secondary-color: #f0f4f8;
+            --text-color: #333;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
+            font-family: var(--font-family);
+            background-color: var(--secondary-color);
+            color: var(--text-color);
             line-height: 1.6;
             font-size: 16px;
         }
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         header {
+            background-color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
             flex-wrap: wrap;
         }
-        .logo {
-            color: #4a6ee0;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-left: 10px;
-        }
-        h1 {
-            font-size: 2rem;
-            color: #4a6ee0;
-            margin-bottom: 1rem;
-        }
+        .logo { color: var(--primary-color); font-size: 1.5rem; font-weight: bold; }
+        .user-info { display: flex; align-items: center; }
+        .user-info img { width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; }
+        h1 { font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem; }
         .card {
             background-color: white;
             border-radius: 8px;
@@ -71,16 +53,10 @@
             border-radius: 20px;
             overflow: hidden;
         }
-        .tab {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-        }
-        .tab.active {
-            background-color: #4a6ee0;
-            color: white;
-        }
+        .tab { padding: 0.5rem 1rem; cursor: pointer; }
+        .tab.active { background-color: var(--primary-color); color: white; }
         button {
-            background-color: #4a6ee0;
+            background-color: var(--primary-color);
             color: white;
             border: none;
             padding: 12px 20px;
@@ -91,9 +67,7 @@
             transition: background-color 0.3s ease;
             width: 100%;
         }
-        button:hover {
-            background-color: #3558b2;
-        }
+        button:hover { background-color: #3558b2; }
         .practice-item {
             display: flex;
             align-items: center;
@@ -108,28 +82,24 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f0f4f8;
+            background-color: var(--secondary-color);
             border-radius: 25px;
         }
-        #practiceView {
-            display: none;
-        }
+        #practiceView { display: none; }
         #questionLabel {
             font-size: 1.1rem;
             margin-bottom: 1rem;
         }
         #optionButtons button {
             background-color: white;
-            color: #333;
+            color: var(--text-color);
             border: 1px solid #e0e0e0;
             margin: 0.5rem 0;
             text-align: left;
             width: 100%;
             transition: background-color 0.3s ease;
         }
-        #optionButtons button:hover {
-            background-color: #f0f4f8;
-        }
+        #optionButtons button:hover { background-color: var(--secondary-color); }
         #feedbackLabel {
             margin-top: 1rem;
             font-weight: bold;
@@ -153,7 +123,7 @@
         }
         .progress {
             height: 100%;
-            background-color: #4a6ee0;
+            background-color: var(--primary-color);
             width: 0%;
             transition: width 0.5s ease;
         }
@@ -199,66 +169,46 @@
             cursor: pointer;
         }
         @media (max-width: 768px) {
-            body {
-                font-size: 14px;
-            }
-            .container {
-                padding: 10px;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
+            body { font-size: 14px; }
+            .container { padding: 10px; }
+            h1 { font-size: 1.5rem; }
             .section-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            .tab-container {
-                margin-top: 0.5rem;
-            }
+            .tab-container { margin-top: 0.5rem; }
             .practice-item {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            .practice-item .icon {
-                margin-bottom: 0.5rem;
-            }
+            .practice-item .icon { margin-bottom: 0.5rem; }
             .progress-container {
                 flex-direction: column;
                 align-items: stretch;
             }
-            .progress-bar {
-                margin: 0.5rem 0;
-            }
+            .progress-bar { margin: 0.5rem 0; }
         }
         @media (max-width: 480px) {
-            body {
-                font-size: 12px;
-            }
-            h1 {
-                font-size: 1.2rem;
-            }
-            .logo {
-                font-size: 1.2rem;
-            }
-            .user-info {
-                font-size: 0.9rem;
-            }
+            body { font-size: 12px; }
+            h1 { font-size: 1.2rem; }
+            .logo { font-size: 1.2rem; }
+            .user-info { font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">SAT Prep</div>
-            <div class="user-info">
-                John Doe
-                <img src="https://via.placeholder.com/40" alt="User Avatar">
-            </div>
-        </header>
+    <header class="container">
+        <div class="logo">SAT Prep</div>
+        <div class="user-info">
+            John Doe
+            <img src="https://via.placeholder.com/40" alt="User Avatar">
+        </div>
+    </header>
 
-        <div id="mainMenu">
+    <main class="container">
+        <section id="mainMenu">
             <h1>Welcome! Good luck on test day!</h1>
-            
+
             <div class="card">
                 <div class="section-header">
                     <h2>Your Tests</h2>
@@ -280,36 +230,36 @@
                 </div>
                 <div class="practice-item">
                     <span class="icon">📐</span>
-                    <button onclick="startPractice('Math')">Math Practice</button>
+                    <button class="start-practice" data-type="Math">Math Practice</button>
                 </div>
                 <div class="practice-item">
                     <span class="icon">📚</span>
-                    <button onclick="startPractice('Verbal')">Verbal Practice</button>
+                    <button class="start-practice" data-type="Verbal">Verbal Practice</button>
                 </div>
                 <div class="practice-item">
                     <span class="icon">✍️</span>
-                    <button onclick="startPractice('Writing')">Writing Practice</button>
+                    <button class="start-practice" data-type="Writing">Writing Practice</button>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="practiceView" class="card">
-            <button id="backButton" onclick="showMainMenu()">Back to Menu</button>
+        <section id="practiceView" class="card">
+            <button id="backButton">Back to Menu</button>
             <h2 id="practiceTitle"></h2>
             <div class="progress-container">
                 <span id="questionNumber"></span>
                 <div class="progress-bar">
                     <div id="progressBar" class="progress"></div>
                 </div>
-                <span id="timeRemaining"></span>
+                <span id="timeRemaining">10:00</span>
             </div>
             <p id="questionLabel"></p>
             <div id="optionButtons"></div>
             <p id="feedbackLabel"></p>
-            <button id="nextButton" onclick="showQuestion()">Next Question</button>
-            <button id="toggleCalculator" onclick="toggleCalculator()">Toggle Calculator</button>
-        </div>
-    </div>
+            <button id="nextButton">Next Question</button>
+            <button id="toggleCalculator">Toggle Calculator</button>
+        </section>
+    </main>
 
     <!-- Include the question files -->
     <script src="math-questions.js"></script>
@@ -318,193 +268,147 @@
     <script src="dos-calculator.js"></script>
 
     <script>
-        let currentPractice = null;
-        let currentQuestions = [];
-        let currentQuestionIndex = 0;
-        let correctAnswers = 0;
-        const totalQuestions = 5;
-        let timeRemaining = 600; // 10 minutes in seconds
-        let timerInterval;
+        (() => {
+            // Cache DOM elements
+            const mainMenu = document.getElementById('mainMenu');
+            const practiceView = document.getElementById('practiceView');
+            const practiceTitle = document.getElementById('practiceTitle');
+            const questionLabel = document.getElementById('questionLabel');
+            const optionButtons = document.getElementById('optionButtons');
+            const feedbackLabel = document.getElementById('feedbackLabel');
+            const nextButton = document.getElementById('nextButton');
+            const progressBar = document.getElementById('progressBar');
+            const timeDisplay = document.getElementById('timeRemaining');
+            const toggleCalculatorBtn = document.getElementById('toggleCalculator');
+            const dosCalculator = document.getElementById('dosCalculator');
+            const backButton = document.getElementById('backButton');
+            let currentPractice, currentQuestions, timerInterval;
+            let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
+            const totalQuestions = 5;
 
-        function startPractice(practiceType) {
-            currentPractice = practiceType;
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('practiceView').style.display = 'block';
-            document.getElementById('practiceTitle').textContent = practiceType + " Practice";
-            
-            switch(practiceType) {
-                case 'Math':
-                    currentQuestions = mathQuestions;
-                    break;
-                case 'Verbal':
-                    currentQuestions = verbalQuestions;
-                    break;
-                case 'Writing':
-                    currentQuestions = writingQuestions;
-                    break;
-            }
-            
-            currentQuestions = shuffleArray(currentQuestions).slice(0, totalQuestions);
-            currentQuestionIndex = 0;
-            correctAnswers = 0;
-            timeRemaining = 600;
-            updateProgressBar();
-            startTimer();
-            showQuestion();
-
-            // Show or hide the calculator toggle button based on practice type
-            document.getElementById('toggleCalculator').style.display = 
-                practiceType === 'Math' ? 'block' : 'none';
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function showQuestion() {
-            if (currentQuestionIndex >= totalQuestions) {
-                finishPractice();
-                return;
-            }
-
-            const question = currentQuestions[currentQuestionIndex];
-            const questionView = document.getElementById('practiceView');
-            
-            // Clear previous question content
-            document.getElementById('questionLabel').textContent = '';
-            document.getElementById('optionButtons').innerHTML = '';
-            
-            // Add question number
-            const questionNumberEl = document.createElement('div');
-            questionNumberEl.className = 'question-number';
-            questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
-            questionView.insertBefore(questionNumberEl, document.getElementById('questionLabel'));
-
-            if (question.hasPassage) {
-                // Create and add passage container
-                const passageContainer = document.createElement('div');
-                passageContainer.className = 'passage-container';
-                passageContainer.textContent = question.passage;
-                questionView.insertBefore(passageContainer, document.getElementById('questionLabel'));
-            }
-
-            document.getElementById('questionLabel').textContent = question.text;
-            
-            const optionButtonsDiv = document.getElementById('optionButtons');
-            question.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
-                button.onclick = () => checkAnswer(option);
-                optionButtonsDiv.appendChild(button);
+            // Event listeners
+            document.querySelectorAll('.start-practice').forEach(btn => {
+                btn.addEventListener('click', () => startPractice(btn.dataset.type));
+            });
+            backButton.addEventListener('click', showMainMenu);
+            nextButton.addEventListener('click', showQuestion);
+            toggleCalculatorBtn.addEventListener('click', () => {
+                dosCalculator.style.display = dosCalculator.style.display === 'none' ? 'block' : 'none';
             });
 
-            document.getElementById('feedbackLabel').textContent = '';
-            document.getElementById('nextButton').style.display = 'none';
-            updateProgressBar();
-        }
-
-        function checkAnswer(selectedAnswer) {
-            const currentQuestion = currentQuestions[currentQuestionIndex];
-            const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
-            if (isCorrect) {
-                document.getElementById('feedbackLabel').textContent = "Correct!";
-                document.getElementById('feedbackLabel').style.color = '#4CAF50';
-                correctAnswers++;
-            } else {
-                document.getElementById('feedbackLabel').textContent = "Incorrect. The correct answer is: " + currentQuestion.correctAnswer;
-                document.getElementById('feedbackLabel').style.color = '#F44336';
+            function startPractice(type) {
+                currentPractice = type;
+                mainMenu.style.display = 'none';
+                practiceView.style.display = 'block';
+                practiceTitle.textContent = `${type} Practice`;
+                currentQuestions = shuffleArray(getQuestionsByType(type)).slice(0, totalQuestions);
+                currentQuestionIndex = correctAnswers = 0;
+                timeRemaining = 600;
+                updateProgressBar();
+                startTimer();
+                showQuestion();
+                toggleCalculatorBtn.style.display = type === 'Math' ? 'block' : 'none';
             }
-            
-            currentQuestionIndex++;
-            document.getElementById('nextButton').style.display = 'block';
-            
-            // Disable all option buttons after an answer is selected
-            document.querySelectorAll('#optionButtons button').forEach(button => {
-                button.disabled = true;
-            });
 
-            updateProgressBar();
-            
-            // Remove passage and question number after answering
-            const passageContainer = document.querySelector('.passage-container');
-            if (passageContainer) passageContainer.remove();
-            const questionNumber = document.querySelector('.question-number');
-            if (questionNumber) questionNumber.remove();
-        }
+            function getQuestionsByType(type) {
+                return {
+                    Math: mathQuestions,
+                    Verbal: verbalQuestions,
+                    Writing: writingQuestions
+                }[type] || [];
+            }
 
-        function updateProgressBar() {
-            const progress = (currentQuestionIndex / totalQuestions) * 100;
-            document.getElementById('progressBar').style.width = `${progress}%`;
-        }
+            function shuffleArray(array) {
+                return array.sort(() => Math.random() - 0.5);
+            }
 
-        function startTimer() {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (timeRemaining > 0) {
-                    timeRemaining--;
-                    updateTimerDisplay();
-                } else {
-                    clearInterval(timerInterval);
-                    finishPractice();
+            function showQuestion() {
+                if (currentQuestionIndex >= totalQuestions) return finishPractice();
+                const question = currentQuestions[currentQuestionIndex];
+                questionLabel.textContent = question.text;
+                optionButtons.innerHTML = '';
+                feedbackLabel.textContent = '';
+                nextButton.style.display = 'none';
+
+                document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
+
+                if (question.hasPassage) {
+                    const passageEl = document.createElement('div');
+                    passageEl.className = 'passage-container';
+                    passageEl.textContent = question.passage;
+                    practiceView.insertBefore(passageEl, questionLabel);
                 }
-            }, 1000);
-        }
 
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
-            document.getElementById('timeRemaining').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
+                const questionNumberEl = document.createElement('div');
+                questionNumberEl.className = 'question-number';
+                questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+                practiceView.insertBefore(questionNumberEl, questionLabel);
 
-        function finishPractice() {
-            clearInterval(timerInterval);
-            const score = (correctAnswers / totalQuestions) * 100;
-            alert(`Practice complete! Your score: ${score.toFixed(1)}%`);
-            showMainMenu();
-        }
+                question.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
+                    btn.addEventListener('click', () => checkAnswer(opt));
+                    optionButtons.appendChild(btn);
+                });
+                updateProgressBar();
+            }
 
-        function showMainMenu() {
-            document.getElementById('mainMenu').style.display = 'block';
-            document.getElementById('practiceView').style.display = 'none';
-            currentPractice = null;
-            currentQuestions = [];
-            currentQuestionIndex = 0;
-            
-            // Clean up any leftover passage or question number elements
-            const passageContainer = document.querySelector('.passage-container');
-            if (passageContainer) passageContainer.remove();
-            const questionNumber = document.querySelector('.question-number');
-            if (questionNumber) questionNumber.remove();
+            function checkAnswer(answer) {
+                const question = currentQuestions[currentQuestionIndex];
+                const isCorrect = answer === question.correctAnswer;
+                feedbackLabel.textContent = isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${question.correctAnswer}`;
+                feedbackLabel.style.color = isCorrect ? '#4CAF50' : '#F44336';
+                if (isCorrect) correctAnswers++;
+                currentQuestionIndex++;
+                nextButton.style.display = 'block';
+                optionButtons.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                updateProgressBar();
+            }
 
-            // Reset progress bar
-            document.getElementById('progressBar').style.width = '0%';
+            function updateProgressBar() {
+                progressBar.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
+            }
 
-            // Clear any remaining feedback
-            document.getElementById('feedbackLabel').textContent = '';
+            function startTimer() {
+                clearInterval(timerInterval);
+                updateTimerDisplay();
+                timerInterval = setInterval(() => {
+                    if (timeRemaining > 0) {
+                        timeRemaining--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        finishPractice();
+                    }
+                }, 1000);
+            }
 
-            // Reset timer display
-            document.getElementById('timeRemaining').textContent = '10:00';
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
 
-            // Clear question label and option buttons
-            document.getElementById('questionLabel').textContent = '';
-            document.getElementById('optionButtons').innerHTML = '';
+            function finishPractice() {
+                clearInterval(timerInterval);
+                alert(`Practice complete! Your score: ${((correctAnswers / totalQuestions) * 100).toFixed(1)}%`);
+                showMainMenu();
+            }
 
-            // Hide next button
-            document.getElementById('nextButton').style.display = 'none';
-
-            // Hide calculator
-            document.getElementById('dosCalculator').style.display = 'none';
-        }
-
-        function toggleCalculator() {
-            const calculator = document.getElementById('dosCalculator');
-            calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
-        }
+            function showMainMenu() {
+                mainMenu.style.display = 'block';
+                practiceView.style.display = 'none';
+                currentQuestionIndex = correctAnswers = 0;
+                timeRemaining = 600;
+                progressBar.style.width = '0%';
+                feedbackLabel.textContent = '';
+                timeDisplay.textContent = '10:00';
+                questionLabel.textContent = '';
+                optionButtons.innerHTML = '';
+                nextButton.style.display = 'none';
+                dosCalculator.style.display = 'none';
+            }
+        })();
     </script>
     <script src="popup.js"></script>
 </body>

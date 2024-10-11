@@ -3,521 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAT Prep</title>
+    <title>Modern Calculator</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        #modernCalculator {
+            display: none;
+            border: 2px solid #333;
+            width: 200px;
+            padding: 10px;
+            background-color: #f9f9f9;
         }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            line-height: 1.6;
-            font-size: 16px;
+
+        #calculatorDisplay {
+            font-size: 32px;
+            height: 40px;
+            text-align: right;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding-right: 10px;
         }
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+
+        button {
+            width: 45px;
+            height: 45px;
+            font-size: 18px;
+            margin: 5px;
         }
-        header {
+
+        .calculator-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
         }
-        .logo {
-            color: #4a6ee0;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
+
         .user-info {
             display: flex;
             align-items: center;
         }
-        .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-left: 10px;
-        }
-        h1 {
-            font-size: 2rem;
-            color: #4a6ee0;
-            margin-bottom: 1rem;
-        }
-        .card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-        .tab-container {
-            display: flex;
-            background-color: #e0e0e0;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        .tab {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-        }
-        .tab.active {
-            background-color: #4a6ee0;
-            color: white;
-        }
-        button {
-            background-color: #4a6ee0;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin: 10px 0;
-            font-size: 1rem;
-            cursor: pointer;
-            border-radius: 20px;
-            transition: background-color 0.3s ease;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #3558b2;
-        }
-        .practice-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        .practice-item .icon {
-            font-size: 2rem;
-            margin-right: 1rem;
-            width: 50px;
-            height: 50px;
-            min-width: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f0f4f8;
-            border-radius: 25px;
-        }
-        #practiceView {
-            display: none;
-        }
-        #questionLabel {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-        }
-        #optionButtons button {
-            background-color: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-            margin: 0.5rem 0;
-            text-align: left;
-            width: 100%;
-            transition: background-color 0.3s ease;
-        }
-        #optionButtons button:hover {
-            background-color: #f0f4f8;
-        }
-        #feedbackLabel {
-            margin-top: 1rem;
-            font-weight: bold;
-            text-align: center;
-        }
-        .progress-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-        .progress-bar {
-            flex-grow: 1;
-            height: 8px;
-            background-color: #e0e0e0;
-            border-radius: 4px;
-            margin: 0 1rem;
-            overflow: hidden;
-            min-width: 100px;
-        }
-        .progress {
-            height: 100%;
-            background-color: #4a6ee0;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-        .passage-container {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-        .question-number {
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-        /* New Calculator styles */
-        #modernCalculator {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 250px;
-            background-color: #f0f0f0;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            padding: 10px;
-            font-family: Arial, sans-serif;
-            z-index: 1000;
-            display: none;
-        }
-        #calculatorDisplay {
-            background-color: #fff;
-            padding: 10px;
-            text-align: right;
-            font-size: 24px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        .calculatorButtons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-        }
-        #modernCalculator button {
-            padding: 10px;
-            font-size: 18px;
-            border: none;
-            background-color: #e0e0e0;
-            cursor: pointer;
-            border-radius: 5px;
-            width: auto;
-            margin: 0;
-        }
-        #modernCalculator button:hover {
-            background-color: #d0d0d0;
-        }
-        #modernCalculator .equalBtn {
-            grid-row: span 2;
-        }
-        #modernCalculator .zeroBtn {
-            grid-column: span 2;
-        }
-        @media (max-width: 768px) {
-            body {
-                font-size: 14px;
-            }
-            .container {
-                padding: 10px;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .tab-container {
-                margin-top: 0.5rem;
-            }
-            .practice-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .practice-item .icon {
-                margin-bottom: 0.5rem;
-            }
-            .progress-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .progress-bar {
-                margin: 0.5rem 0;
-            }
-        }
-        @media (max-width: 480px) {
-            body {
-                font-size: 12px;
-            }
-            h1 {
-                font-size: 1.2rem;
-            }
-            .logo {
-                font-size: 1.2rem;
-            }
-            .user-info {
-                font-size: 0.9rem;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">SAT Prep</div>
-            <div class="user-info">
-                John Doe
-                <img src="https://via.placeholder.com/40" alt="User Avatar">
-            </div>
-        </header>
 
-        <div id="mainMenu">
-            <h1>Welcome! Good luck on test day!</h1>
-            
-            <div class="card">
-                <div class="section-header">
-                    <h2>Your Tests</h2>
-                    <div class="tab-container">
-                        <div class="tab active">Active</div>
-                        <div class="tab">Past</div>
-                    </div>
-                </div>
-                <p>You have no upcoming tests.</p>
-            </div>
+    <div class="user-info">
+        User Info
+        <!-- Toggle button will be inserted here by JS -->
+    </div>
 
-            <div class="card">
-                <div class="section-header">
-                    <h2>Practice and Prepare</h2>
-                    <div class="tab-container">
-                        <div class="tab active">Active</div>
-                        <div class="tab">Past</div>
-                    </div>
-                </div>
-                <div class="practice-item">
-                    <span class="icon">📐</span>
-                    <button onclick="startPractice('Math')">Math Practice</button>
-                </div>
-                <div class="practice-item">
-                    <span class="icon">📚</span>
-                    <button onclick="startPractice('Verbal')">Verbal Practice</button>
-                </div>
-                <div class="practice-item">
-                    <span class="icon">✍️</span>
-                    <button onclick="startPractice('Writing')">Writing Practice</button>
-                </div>
-            </div>
+    <div id="modernCalculator">
+        <div id="calculatorDisplay">0</div>
+
+        <div class="calculator-row">
+            <button onclick="calculator.inputDigit('7')">7</button>
+            <button onclick="calculator.inputDigit('8')">8</button>
+            <button onclick="calculator.inputDigit('9')">9</button>
+            <button onclick="calculator.handleOperator('/')">/</button>
         </div>
-
-        <div id="practiceView" class="card">
-            <button id="backButton" onclick="showMainMenu()">Back to Menu</button>
-            <h2 id="practiceTitle"></h2>
-            <div class="progress-container">
-                <span id="questionNumber"></span>
-                <div class="progress-bar">
-                    <div id="progressBar" class="progress"></div>
-                </div>
-                <span id="timeRemaining"></span>
-            </div>
-            <p id="questionLabel"></p>
-            <div id="optionButtons"></div>
-            <p id="feedbackLabel"></p>
-            <button id="nextButton" onclick="showQuestion()">Next Question</button>
+        <div class="calculator-row">
+            <button onclick="calculator.inputDigit('4')">4</button>
+            <button onclick="calculator.inputDigit('5')">5</button>
+            <button onclick="calculator.inputDigit('6')">6</button>
+            <button onclick="calculator.handleOperator('*')">*</button>
+        </div>
+        <div class="calculator-row">
+            <button onclick="calculator.inputDigit('1')">1</button>
+            <button onclick="calculator.inputDigit('2')">2</button>
+            <button onclick="calculator.inputDigit('3')">3</button>
+            <button onclick="calculator.handleOperator('-')">-</button>
+        </div>
+        <div class="calculator-row">
+            <button onclick="calculator.inputDigit('0')">0</button>
+            <button onclick="calculator.inputDecimal()">.</button>
+            <button onclick="calculator.clear()">C</button>
+            <button onclick="calculator.handleOperator('+')">+</button>
+        </div>
+        <div class="calculator-row">
+            <button style="width: 100%" onclick="calculator.handleOperator('=')">=</button>
         </div>
     </div>
 
-    <!-- Include the question files -->
-    <script src="math-questions.js"></script>
-    <script src="verbal-questions.js"></script>
-    <script src="writing-questions.js"></script>
-    <script src="dos-calculator.js"></script>
-
     <script>
-        let currentPractice = null;
-        let currentQuestions = [];
-        let currentQuestionIndex = 0;
-        let correctAnswers = 0;
-        const totalQuestions = 5;
-        let timeRemaining = 600; // 10 minutes in seconds
-        let timerInterval;
-
-        function startPractice(practiceType) {
-            currentPractice = practiceType;
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('practiceView').style.display = 'block';
-            document.getElementById('practiceTitle').textContent = practiceType + " Practice";
-            
-            switch(practiceType) {
-                case 'Math':
-                    currentQuestions = mathQuestions;
-                    break;
-                case 'Verbal':
-                    currentQuestions = verbalQuestions;
-                    break;
-                case 'Writing':
-                    currentQuestions = writingQuestions;
-                    break;
-            }
-            
-            currentQuestions = shuffleArray(currentQuestions).slice(0, totalQuestions);
-            currentQuestionIndex = 0;
-            correctAnswers = 0;
-            timeRemaining = 600;
-            updateProgressBar();
-            startTimer();
-            showQuestion();
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function showQuestion() {
-            if (currentQuestionIndex >= totalQuestions) {
-                finishPractice();
-                return;
+        class ModernCalculator {
+            constructor() {
+                this.display = '0';
+                this.currentValue = 0;
+                this.operator = null;
+                this.waitingForSecondOperand = false;
             }
 
-            const question = currentQuestions[currentQuestionIndex];
-            const questionView = document.getElementById('practiceView');
-            
-            // Clear previous question content
-            document.getElementById('questionLabel').textContent = '';
-            document.getElementById('optionButtons').innerHTML = '';
-            
-            // Add question number
-            const questionNumberEl = document.createElement('div');
-            questionNumberEl.className = 'question-number';
-            questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
-            questionView.insertBefore(questionNumberEl, document.getElementById('questionLabel'));
-
-            if (question.hasPassage) {
-                // Create and add passage container
-                const passageContainer = document.createElement('div');
-                passageContainer.className = 'passage-container';
-                passageContainer.textContent = question.passage;
-                questionView.insertBefore(passageContainer, document.getElementById('questionLabel'));
+            updateDisplay() {
+                document.getElementById('calculatorDisplay').textContent = this.display;
             }
 
-            document.getElementById('questionLabel').textContent = question.text;
-            
-            const optionButtonsDiv = document.getElementById('optionButtons');
-            question.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
-                button.onclick = () => checkAnswer(option);
-                optionButtonsDiv.appendChild(button);
-            });
-
-            document.getElementById('feedbackLabel').textContent = '';
-            document.getElementById('nextButton').style.display = 'none';
-            updateProgressBar();
-        }
-
-        function checkAnswer(selectedAnswer) {
-            const currentQuestion = currentQuestions[currentQuestionIndex];
-            const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
-            if (isCorrect) {
-                document.getElementById('feedbackLabel').textContent = "Correct!";
-                document.getElementById('feedbackLabel').style.color = '#4CAF50';
-                correctAnswers++;
-            } else {
-                document.getElementById('feedbackLabel').textContent = "Incorrect. The correct answer is: " + currentQuestion.correctAnswer;
-                document.getElementById('feedbackLabel').style.color = '#F44336';
-            }
-            
-            currentQuestionIndex++;
-            document.getElementById('nextButton').style.display = 'block';
-            
-            // Disable all option buttons after an answer is selected
-            document.querySelectorAll('#optionButtons button').forEach(button => {
-                button.disabled = true;
-            });
-
-            updateProgressBar();
-            
-            // Remove passage and question number after answering
-            const passageContainer = document.querySelector('.passage-container');
-            if (passageContainer) passageContainer.remove();
-            const questionNumber = document.querySelector('.question-number');
-            if (questionNumber) questionNumber.remove();
-        }
-
-        function updateProgressBar() {
-            const progress = (currentQuestionIndex / totalQuestions) * 100;
-            document.getElementById('progressBar').style.width = `${progress}%`;
-        }
-
-        function startTimer() {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (timeRemaining > 0) {
-                    timeRemaining--;
-                    updateTimerDisplay();
+            inputDigit(digit) {
+                if (this.waitingForSecondOperand) {
+                    this.display = digit;
+                    this.waitingForSecondOperand = false;
                 } else {
-                    clearInterval(timerInterval);
-                    finishPractice();
+                    this.display = this.display === '0' ? digit : this.display + digit;
                 }
-            }, 1000);
+                this.updateDisplay();
+            }
+
+            inputDecimal() {
+                if (!this.display.includes('.')) {
+                    this.display += '.';
+                    this.updateDisplay();
+                }
+            }
+
+            clear() {
+                this.display = '0';
+                this.currentValue = 0;
+                this.operator = null;
+                this.waitingForSecondOperand = false;
+                this.updateDisplay();
+            }
+
+            handleOperator(nextOperator) {
+                const inputValue = parseFloat(this.display);
+
+                if (this.operator && this.waitingForSecondOperand) {
+                    this.operator = nextOperator;
+                    return;
+                }
+
+                if (this.currentValue === 0) {
+                    this.currentValue = inputValue;
+                } else if (this.operator) {
+                    const result = this.performCalculation[this.operator](this.currentValue, inputValue);
+                    this.display = String(result);
+                    this.currentValue = result;
+                }
+
+                this.waitingForSecondOperand = true;
+                this.operator = nextOperator;
+                this.updateDisplay();
+            }
+
+            performCalculation = {
+                '/': (firstOperand, secondOperand) => firstOperand / secondOperand,
+                '*': (firstOperand, secondOperand) => firstOperand * secondOperand,
+                '+': (firstOperand, secondOperand) => firstOperand + secondOperand,
+                '-': (firstOperand, secondOperand) => firstOperand - secondOperand,
+                '=': (firstOperand, secondOperand) => secondOperand
+            };
         }
 
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
-            document.getElementById('timeRemaining').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const calculator = new ModernCalculator();
+
+        function toggleCalculator() {
+            const calculatorElement = document.getElementById('modernCalculator');
+            if (calculatorElement) {
+                calculatorElement.style.display = calculatorElement.style.display === 'none' ? 'block' : 'none';
+            } else {
+                console.error('Calculator element not found');
+            }
         }
 
-        function finishPractice() {
-            clearInterval(timerInterval);
-            const score = (correctAnswers / totalQuestions) * 100;
-            alert(`Practice complete! Your score: ${score.toFixed(1)}%`);
-            showMainMenu();
+        function addToggleButton() {
+            const userInfo = document.querySelector('.user-info');
+            if (userInfo) {
+                const toggleButton = document.createElement('button');
+                toggleButton.textContent = '🖩';
+                toggleButton.onclick = toggleCalculator;
+                toggleButton.style.cssText = `
+                    background: none;
+                    border: none;
+                    font-size: 24px;
+                    cursor: pointer;
+                    margin-left: 10px;
+                `;
+                userInfo.appendChild(toggleButton);
+            } else {
+                console.error('User info element not found');
+            }
         }
 
-        function showMainMenu() {
-            document.getElementById('mainMenu').style.display = 'block';
-            document.getElementById('practiceView').style.display = 'none';
-            currentPractice = null;
-            currentQuestions = [];
-            currentQuestionIndex = 0;
-            
-            // Clean up any leftover passage or question number elements
-            const passageContainer = document.querySelector('.passage-container');
-            if (passageContainer) passageContainer.remove();
-            
-            const questionNumber = document.querySelector('.question-number');
-            if (questionNumber) questionNumber.remove();
-
-            // Reset progress bar
-            document.getElementById('progressBar').style.width = '0%';
-
-            // Clear any remaining feedback
-            document.getElementById('feedbackLabel').textContent = '';
-
-            // Reset timer display
-            document.getElementById('timeRemaining').textContent = '10:00';
-
-            // Clear question label and option buttons
-            document.getElementById('questionLabel').textContent = '';
-            document.getElementById('optionButtons').innerHTML = '';
-
-            // Hide next button
-            document.getElementById('nextButton').style.display = 'none';
-
-            // Hide calculator
-            document.getElementById('modernCalculator').style.display = 'none';
-        }
-
-        // The toggleCalculator function is now handled in dos-calculator.js
+        // Call this function when the page loads
+        window.addEventListener('load', addToggleButton);
     </script>
-    <script src="popup.js"></script>
+
 </body>
 </html>

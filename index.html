@@ -152,12 +152,16 @@
             border: 2px solid #0f0;
             font-family: 'Courier New', monospace;
             display: none;
+            z-index: 1000;
         }
         #calculatorDisplay {
             background-color: #222;
             padding: 5px;
             margin-bottom: 10px;
             text-align: right;
+            color: #0f0;
+            font-size: 1.2rem;
+            height: 30px;
         }
         #dosCalculator button {
             width: 40px;
@@ -167,6 +171,10 @@
             color: #0f0;
             border: 1px solid #0f0;
             cursor: pointer;
+            font-size: 1rem;
+        }
+        #dosCalculator button:hover {
+            background-color: #444;
         }
         @media (max-width: 768px) {
             body { font-size: 14px; }
@@ -261,11 +269,40 @@
         </section>
     </main>
 
+    <!-- Calculator -->
+    <div id="dosCalculator">
+        <div id="calculatorDisplay">0</div>
+        <div>
+            <button data-action="clear">C</button>
+            <button data-digit="7">7</button>
+            <button data-digit="8">8</button>
+            <button data-digit="9">9</button>
+            <button data-operator="/">/</button>
+        </div>
+        <div>
+            <button data-digit="4">4</button>
+            <button data-digit="5">5</button>
+            <button data-digit="6">6</button>
+            <button data-operator="*">*</button>
+        </div>
+        <div>
+            <button data-digit="1">1</button>
+            <button data-digit="2">2</button>
+            <button data-digit="3">3</button>
+            <button data-operator="-">-</button>
+        </div>
+        <div>
+            <button data-digit="0">0</button>
+            <button data-action="decimal">.</button>
+            <button data-operator="=">=</button>
+            <button data-operator="+">+</button>
+        </div>
+    </div>
+
     <!-- Include the question files -->
     <script src="math-questions.js"></script>
     <script src="verbal-questions.js"></script>
     <script src="writing-questions.js"></script>
-    <script src="dos-calculator.js"></script>
 
     <script>
         (() => {
@@ -280,8 +317,8 @@
             const progressBar = document.getElementById('progressBar');
             const timeDisplay = document.getElementById('timeRemaining');
             const toggleCalculatorBtn = document.getElementById('toggleCalculator');
-            const dosCalculator = document.getElementById('dosCalculator');
             const backButton = document.getElementById('backButton');
+
             let currentPractice, currentQuestions, timerInterval;
             let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
             const totalQuestions = 5;
@@ -292,9 +329,7 @@
             });
             backButton.addEventListener('click', showMainMenu);
             nextButton.addEventListener('click', showQuestion);
-            toggleCalculatorBtn.addEventListener('click', () => {
-                dosCalculator.style.display = dosCalculator.style.display === 'none' ? 'block' : 'none';
-            });
+            toggleCalculatorBtn.addEventListener('click', toggleCalculator);
 
             function startPractice(type) {
                 currentPractice = type;
@@ -406,10 +441,117 @@
                 questionLabel.textContent = '';
                 optionButtons.innerHTML = '';
                 nextButton.style.display = 'none';
-                dosCalculator.style.display = 'none';
+                document.getElementById('dosCalculator').style.display = 'none';
             }
+
+            // Calculator Code
+            class DOSCalculator {
+                constructor() {
+                    this.display = '0';
+                    this.currentValue = null;
+                    this.operator = null;
+                    this.waitingForSecondOperand = false;
+                    this.init();
+                }
+
+                init() {
+                    this.displayElement = document.getElementById('calculatorDisplay');
+                    this.updateDisplay();
+                    const keys = document.querySelectorAll('#dosCalculator button');
+                    keys.forEach(key => key.addEventListener('click', event => this.handleButton(event.target)));
+                }
+
+                updateDisplay() {
+                    this.displayElement.textContent = this.display;
+                }
+
+                handleButton(button) {
+                    const { action, digit, operator } = button.dataset;
+
+                    if (digit) {
+                        this.inputDigit(digit);
+                    } else if (operator) {
+                        this.handleOperator(operator);
+                    } else if (action === 'decimal') {
+                        this.inputDecimal();
+                    } else if (action === 'clear') {
+                        this.clear();
+                    }
+                }
+
+                inputDigit(digit) {
+                    if (this.waitingForSecondOperand) {
+                        this.display = digit;
+                        this.waitingForSecondOperand = false;
+                    } else {
+                        this.display = this.display === '0' ? digit : this.display + digit;
+                    }
+                    this.updateDisplay();
+                }
+
+                inputDecimal() {
+                    if (this.waitingForSecondOperand) {
+                        this.display = '0.';
+                        this.waitingForSecondOperand = false;
+                    } else if (!this.display.includes('.')) {
+                        this.display += '.';
+                    }
+                    this.updateDisplay();
+                }
+
+                clear() {
+                    this.display = '0';
+                    this.currentValue = null;
+                    this.operator = null;
+                    this.waitingForSecondOperand = false;
+                    this.updateDisplay();
+                }
+
+                handleOperator(nextOperator) {
+                    const inputValue = parseFloat(this.display);
+
+                    if (this.operator && this.waitingForSecondOperand) {
+                        this.operator = nextOperator;
+                        return;
+                    }
+
+                    if (this.currentValue == null && !isNaN(inputValue)) {
+                        this.currentValue = inputValue;
+                    } else if (this.operator) {
+                        const result = this.performCalculation(this.operator, this.currentValue, inputValue);
+                        this.display = String(result);
+                        this.currentValue = result;
+                    }
+
+                    this.waitingForSecondOperand = true;
+                    this.operator = nextOperator;
+                    this.updateDisplay();
+                }
+
+                performCalculation(operator, firstOperand, secondOperand) {
+                    switch (operator) {
+                        case '+': return firstOperand + secondOperand;
+                        case '-': return firstOperand - secondOperand;
+                        case '*': return firstOperand * secondOperand;
+                        case '/': return firstOperand / secondOperand;
+                        case '=': return secondOperand;
+                    }
+                    return secondOperand;
+                }
+            }
+
+            const calculator = new DOSCalculator();
+
+            function toggleCalculator() {
+                const calculatorDiv = document.getElementById('dosCalculator');
+                calculatorDiv.style.display = calculatorDiv.style.display === 'none' ? 'block' : 'none';
+            }
+
+            // Initialize the calculator when the page loads
+            window.addEventListener('load', () => {
+                // Calculator is already initialized in the DOSCalculator class constructor
+            });
         })();
     </script>
-    <script src="popup.js"></script>
 </body>
 </html>

@@ -78,6 +78,7 @@ function toggleCalculator() {
 }
 
 function addToggleButton() {
+    console.log("Attempting to add the toggle button...");
     const userInfo = document.querySelector('.user-info');
     if (userInfo) {
         const toggleButton = document.createElement('button');
@@ -97,7 +98,6 @@ function addToggleButton() {
 }
 
 function addToggleButton() {
-    console.log("Attempting to add the toggle button...");
     const userInfo = document.querySelector('.user-info');
     if (userInfo) {
         const toggleButton = document.createElement('button');

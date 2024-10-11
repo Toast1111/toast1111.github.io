@@ -171,32 +171,51 @@
             font-size: 1.2rem;
             margin-bottom: 0.5rem;
         }
-        /* Calculator styles */
-        #dosCalculator {
+        /* New Calculator styles */
+        #modernCalculator {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
-            background-color: #000;
-            color: #0f0;
+            width: 250px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             padding: 10px;
-            border: 2px solid #0f0;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
+            z-index: 1000;
             display: none;
         }
         #calculatorDisplay {
-            background-color: #222;
-            padding: 5px;
-            margin-bottom: 10px;
+            background-color: #fff;
+            padding: 10px;
             text-align: right;
+            font-size: 24px;
+            margin-bottom: 10px;
+            border-radius: 5px;
         }
-        #dosCalculator button {
-            width: 40px;
-            height: 40px;
-            margin: 2px;
-            background-color: #333;
-            color: #0f0;
-            border: 1px solid #0f0;
+        .calculatorButtons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+        #modernCalculator button {
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            background-color: #e0e0e0;
             cursor: pointer;
+            border-radius: 5px;
+            width: auto;
+            margin: 0;
+        }
+        #modernCalculator button:hover {
+            background-color: #d0d0d0;
+        }
+        #modernCalculator .equalBtn {
+            grid-row: span 2;
+        }
+        #modernCalculator .zeroBtn {
+            grid-column: span 2;
         }
         @media (max-width: 768px) {
             body {
@@ -307,7 +326,6 @@
             <div id="optionButtons"></div>
             <p id="feedbackLabel"></p>
             <button id="nextButton" onclick="showQuestion()">Next Question</button>
-            <button id="toggleCalculator" onclick="toggleCalculator()">Toggle Calculator</button>
         </div>
     </div>
 
@@ -351,10 +369,6 @@
             updateProgressBar();
             startTimer();
             showQuestion();
-
-            // Show or hide the calculator toggle button based on practice type
-            document.getElementById('toggleCalculator').style.display = 
-                practiceType === 'Math' ? 'block' : 'none';
         }
 
         function shuffleArray(array) {
@@ -478,6 +492,7 @@
             // Clean up any leftover passage or question number elements
             const passageContainer = document.querySelector('.passage-container');
             if (passageContainer) passageContainer.remove();
+            
             const questionNumber = document.querySelector('.question-number');
             if (questionNumber) questionNumber.remove();
 
@@ -498,13 +513,10 @@
             document.getElementById('nextButton').style.display = 'none';
 
             // Hide calculator
-            document.getElementById('dosCalculator').style.display = 'none';
+            document.getElementById('modernCalculator').style.display = 'none';
         }
 
-        function toggleCalculator() {
-            const calculator = document.getElementById('dosCalculator');
-            calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
-        }
+        // The toggleCalculator function is now handled in dos-calculator.js
     </script>
     <script src="popup.js"></script>
 </body>

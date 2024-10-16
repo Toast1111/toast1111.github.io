@@ -3,7 +3,7 @@ style.textContent = `
 .popup {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    left: 20px;
     background-color: #4a6ee0;
     color: white;
     padding: 15px;

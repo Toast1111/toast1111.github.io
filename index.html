@@ -32,6 +32,16 @@
         .logo { color: var(--primary-color); font-size: 1.5rem; font-weight: bold; }
         .user-info { display: flex; align-items: center; }
         .user-info img { width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; }
+        .user-info button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+        }
         h1 { font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem; }
         .card {
             background-color: white;
@@ -142,58 +152,90 @@
             margin-bottom: 0.5rem;
         }
         /* Updated Calculator styles */
-#dosCalculator {
-    position: fixed;
-    top: 50px;
-    right: 20px;
-    background-color: #f8f9fa;
-    color: #333;
-    padding: 20px;
-    border: 2px solid #4a6ee0;
-    border-radius: 12px;
-    font-family: 'Courier New', monospace;
-    display: none;
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-#calculatorDisplay {
-    background-color: #222;
-    padding: 15px;
-    margin-bottom: 20px;
-    text-align: right;
-    color: #0f0;
-    font-size: 1.5rem;
-    border-radius: 8px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-    height: 50px;
-    display: flex;
-    align-items: center;
-}
-
-#dosCalculator button {
-    width: 60px;
-    height: 60px;
-    margin: 5px;
-    background-color: #4a6ee0;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#dosCalculator button:hover {
-    background-color: #3558b2;
-    transform: scale(1.05);
-}
-
-#dosCalculator button:active {
-    transform: scale(0.95);
-}
-        
+        #dosCalculator {
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            border: 2px solid #4a6ee0;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        #calculatorDisplay {
+            background-color: #222;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: right;
+            color: #0f0;
+            font-size: 1.5rem;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+        #dosCalculator button {
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            background-color: #4a6ee0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #dosCalculator button:hover {
+            background-color: #3558b2;
+            transform: scale(1.05);
+        }
+        #dosCalculator button:active {
+            transform: scale(0.95);
+        }
+        /* Settings Menu Modal styles */
+        #settingsMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        #settingsContent {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        #settingsContent h2 {
+            margin-bottom: 1rem;
+        }
+        #settingsContent button {
+            margin: 5px 0;
+            width: 100%;
+        }
+        #settingsOutput {
+            margin-top: 10px;
+            background: #f0f4f8;
+            padding: 10px;
+            border-radius: 4px;
+            min-height: 50px;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -202,6 +244,7 @@
         <div class="user-info">
             Some Human
             <img src="https://via.placeholder.com/40" alt="User Avatar">
+            <button id="openSettings">Settings</button>
         </div>
     </header>
 
@@ -291,11 +334,68 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settingsMenu">
+        <div id="settingsContent">
+            <h2>Settings</h2>
+            <button id="btnViewSession">View Saved Practice Session</button>
+            <button id="btnClearSession">Clear Saved Practice Session</button>
+            <button id="btnViewTests">View Completed Tests</button>
+            <button id="btnClearTests">Clear Completed Tests</button>
+            <button id="btnCloseSettings">Close</button>
+            <div id="settingsOutput"></div>
+        </div>
+    </div>
+
     <!-- Include the question files -->
     <script src="math-questions.js"></script>
     <script src="verbal-questions.js"></script>
     <script src="writing-questions.js"></script>
 
+    <!-- Storage Functions (integrated from storage.js) -->
+    <script>
+        const STORAGE_KEY = 'SAT_PRACTICE_DATA';
+        const COMPLETED_TESTS_KEY = 'COMPLETED_TESTS';
+
+        // Save current practice session
+        function savePracticeSession(practiceData) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(practiceData));
+        }
+
+        // Load saved practice session
+        function loadPracticeSession() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            return savedData ? JSON.parse(savedData) : null;
+        }
+
+        // Clear saved practice session
+        function clearPracticeSession() {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+
+        // Save completed test
+        function saveCompletedTest(testData) {
+            let completedTests = JSON.parse(localStorage.getItem(COMPLETED_TESTS_KEY) || '[]');
+            completedTests.push(testData);
+            localStorage.setItem(COMPLETED_TESTS_KEY, JSON.stringify(completedTests));
+        }
+
+        // Get all completed tests
+        function getCompletedTests() {
+            return JSON.parse(localStorage.getItem(COMPLETED_TESTS_KEY) || '[]');
+        }
+
+        // Make these functions available globally
+        window.satPracticeStorage = {
+            savePracticeSession,
+            loadPracticeSession,
+            clearPracticeSession,
+            saveCompletedTest,
+            getCompletedTests
+        };
+    </script>
+
+    <!-- Main SAT Prep Script -->
     <script>
         (() => {
             // Cache DOM elements
@@ -544,6 +644,32 @@
                 // Calculator is already initialized in the DOSCalculator class constructor
             });
         })();
+    </script>
+
+    <!-- Settings Menu Script -->
+    <script>
+        document.getElementById('openSettings').addEventListener('click', function() {
+            document.getElementById('settingsMenu').style.display = 'flex';
+        });
+        document.getElementById('btnCloseSettings').addEventListener('click', function() {
+            document.getElementById('settingsMenu').style.display = 'none';
+        });
+        document.getElementById('btnViewSession').addEventListener('click', function() {
+            const session = window.satPracticeStorage.loadPracticeSession();
+            document.getElementById('settingsOutput').innerText = session ? JSON.stringify(session, null, 2) : 'No saved practice session found.';
+        });
+        document.getElementById('btnClearSession').addEventListener('click', function() {
+            window.satPracticeStorage.clearPracticeSession();
+            document.getElementById('settingsOutput').innerText = 'Practice session cleared.';
+        });
+        document.getElementById('btnViewTests').addEventListener('click', function() {
+            const tests = window.satPracticeStorage.getCompletedTests();
+            document.getElementById('settingsOutput').innerText = tests.length ? JSON.stringify(tests, null, 2) : 'No completed tests found.';
+        });
+        document.getElementById('btnClearTests').addEventListener('click', function() {
+            localStorage.removeItem('COMPLETED_TESTS');
+            document.getElementById('settingsOutput').innerText = 'Completed tests cleared.';
+        });
     </script>
 </body>
 </html>

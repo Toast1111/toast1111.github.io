@@ -251,7 +251,6 @@
     <main class="container">
         <section id="mainMenu">
             <h1>Welcome! Good luck on test day!</h1>
-
             <div class="card">
                 <div class="section-header">
                     <h2>Your Tests</h2>
@@ -262,7 +261,6 @@
                 </div>
                 <p>You may have an upcoming test.</p>
             </div>
-
             <div class="card">
                 <div class="section-header">
                     <h2>Practice and Prepare</h2>
@@ -415,7 +413,7 @@
             let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
             const totalQuestions = 5;
 
-            // Event listeners
+            // Event listeners for practice start buttons
             document.querySelectorAll('.start-practice').forEach(btn => {
                 btn.addEventListener('click', () => startPractice(btn.dataset.type));
             });
@@ -457,6 +455,7 @@
                 feedbackLabel.textContent = '';
                 nextButton.style.display = 'none';
 
+                // Remove previous passage or question number if any
                 document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
 
                 if (question.hasPassage) {
@@ -518,7 +517,17 @@
 
             function finishPractice() {
                 clearInterval(timerInterval);
-                alert(`Practice complete! Your score: ${((correctAnswers / totalQuestions) * 100).toFixed(1)}%`);
+                // Calculate score and save the test result
+                const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+                const testData = {
+                    type: currentPractice,
+                    score: scorePercentage,
+                    correctAnswers: correctAnswers,
+                    totalQuestions: totalQuestions,
+                    date: new Date().toISOString()
+                };
+                window.satPracticeStorage.saveCompletedTest(testData);
+                alert(`Practice complete! Your score: ${scorePercentage}%. Test saved.`);
                 showMainMenu();
             }
 
@@ -559,7 +568,6 @@
 
                 handleButton(button) {
                     const { action, digit, operator } = button.dataset;
-
                     if (digit) {
                         this.inputDigit(digit);
                     } else if (operator) {
@@ -601,12 +609,10 @@
 
                 handleOperator(nextOperator) {
                     const inputValue = parseFloat(this.display);
-
                     if (this.operator && this.waitingForSecondOperand) {
                         this.operator = nextOperator;
                         return;
                     }
-
                     if (this.currentValue == null && !isNaN(inputValue)) {
                         this.currentValue = inputValue;
                     } else if (this.operator) {
@@ -614,7 +620,6 @@
                         this.display = String(result);
                         this.currentValue = result;
                     }
-
                     this.waitingForSecondOperand = true;
                     this.operator = nextOperator;
                     this.updateDisplay();
@@ -639,9 +644,8 @@
                 calculatorDiv.style.display = calculatorDiv.style.display === 'none' ? 'block' : 'none';
             }
 
-            // Initialize the calculator when the page loads
             window.addEventListener('load', () => {
-                // Calculator is already initialized in the DOSCalculator class constructor
+                // Calculator is initialized in the DOSCalculator constructor.
             });
         })();
     </script>

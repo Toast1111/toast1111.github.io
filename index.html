@@ -286,6 +286,13 @@
     const auth = firebase.auth();
     const db = firebase.database();
   </script>
+  <!-- (Assumed external files: math-questions.js, verbal-questions.js, writing-questions.js, popup.js, dos-calculator.js, storage.js) -->
+  <script src="math-questions.js"></script>
+  <script src="verbal-questions.js"></script>
+  <script src="writing-questions.js"></script>
+  <script src="popup.js"></script>
+  <script src="dos-calculator.js"></script>
+  <script src="storage.js"></script>
 </head>
 <body>
   <header class="container">
@@ -404,14 +411,6 @@
       <div id="settingsOutput"></div>
     </div>
   </div>
-
-  <!-- Include your existing question and utility scripts -->
-  <script src="math-questions.js"></script>
-  <script src="verbal-questions.js"></script>
-  <script src="writing-questions.js"></script>
-  <script src="popup.js"></script>
-  <script src="dos-calculator.js"></script>
-  <script src="storage.js"></script>
 
   <!-- Main SAT Prep Logic and Admin Functionality -->
   <script>
@@ -573,6 +572,8 @@
     function finishPractice() {
       clearInterval(timerInterval);
       const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+      // Collect the numeric IDs from the questions used in this test
+      const questionIDs = currentQuestions.map(q => q.id);
       const user = auth.currentUser;
       if (user) {
         const testData = {
@@ -580,7 +581,8 @@
           score: scorePercentage,
           correctAnswers,
           totalQuestions,
-          date: new Date().toISOString()
+          date: new Date().toISOString(),
+          questionIDs: questionIDs  // New: Array of question numeric IDs
         };
         window.satPracticeStorage.saveCompletedTest(testData);
         alert(`Practice complete! Your score: ${scorePercentage}%. Test saved to your account.`);
@@ -688,7 +690,8 @@
                 html += `<ul>`;
                 for (const testKey in data[uid].completedTests) {
                   const test = data[uid].completedTests[testKey];
-                  html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%</li>`;
+                  html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%<br>
+                           <small>Questions: ${test.questionIDs.join(', ')}</small></li>`;
                 }
                 html += `</ul>`;
               } else {

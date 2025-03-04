@@ -43,7 +43,7 @@
   }
 
   // Get all completed tests from DB
-  // callback gets an array of test objects
+  // Callback gets an array of test objects
   function getCompletedTests(callback) {
     const user = auth.currentUser;
     if (!user) {
@@ -54,8 +54,14 @@
       .then(snapshot => {
         const data = snapshot.val();
         if (data) {
-          // data is an object {key1: testObj, key2: testObj, ...}
-          callback(Object.values(data));
+          // Convert object to array and ensure each test has a questionIDs property.
+          const tests = Object.values(data).map(test => {
+            if (!test.questionIDs) {
+              test.questionIDs = [];
+            }
+            return test;
+          });
+          callback(tests);
         } else {
           callback([]);
         }

@@ -256,6 +256,18 @@
       white-space: pre-wrap;
       font-size: 0.9rem;
     }
+    /* Admin Panel */
+    #adminArea {
+      display: none;
+      margin-top: 20px;
+    }
+    #adminArea h2 {
+      margin-bottom: 1rem;
+    }
+    #adminContent div {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
   </style>
   <!-- Firebase SDKs using compat versions -->
   <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
@@ -339,6 +351,13 @@
       <button id="nextButton">Next Question</button>
       <button id="toggleCalculator">Toggle Calculator</button>
     </section>
+
+    <!-- Admin Panel Section (Hidden by default) -->
+    <section id="adminArea" class="card">
+      <h2>Admin Panel</h2>
+      <button id="refreshAdminData">Refresh Data</button>
+      <div id="adminContent"></div>
+    </section>
   </main>
 
   <!-- Calculator -->
@@ -379,6 +398,8 @@
       <button id="btnClearSession">Clear Saved Practice Session</button>
       <button id="btnViewTests">View Completed Tests</button>
       <button id="btnClearTests">Clear Completed Tests</button>
+      <!-- New Admin Login Button -->
+      <button id="btnAdminLogin">Admin Login</button>
       <button id="btnCloseSettings">Close</button>
       <div id="settingsOutput"></div>
     </div>
@@ -392,7 +413,7 @@
   <script src="dos-calculator.js"></script>
   <script src="storage.js"></script>
 
-  <!-- Main SAT Prep Logic -->
+  <!-- Main SAT Prep Logic and Admin Functionality -->
   <script>
     // =============== AUTH SETUP ===============
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -419,6 +440,8 @@
         userAvatarEl.src = 'https://via.placeholder.com/40';
         signInBtn.style.display = 'inline-block';
         signOutBtn.style.display = 'none';
+        // Hide admin panel when signing out
+        document.getElementById('adminArea').style.display = 'none';
       }
     });
 
@@ -624,6 +647,56 @@
           settingsOutput.innerText = 'Completed tests cleared.';
         });
     };
+
+    // ============== ADMIN FUNCTIONALITY ==============
+    document.getElementById('btnAdminLogin').onclick = () => {
+      if (!auth.currentUser) {
+        alert("You must be signed in to become an admin.");
+        return;
+      }
+      const code = prompt("Enter the 4-digit admin code:");
+      if (code === "1234") {  // Change this code as needed.
+        window.isAdmin = true;
+        alert("Admin privileges granted.");
+        document.getElementById('adminArea').style.display = 'block';
+        fetchAdminData();
+      } else {
+        alert("Incorrect code.");
+      }
+    };
+
+    document.getElementById('refreshAdminData').onclick = fetchAdminData;
+
+    function fetchAdminData() {
+      firebase.database().ref('users').once('value')
+        .then(snapshot => {
+          const data = snapshot.val();
+          let html = '';
+          if (data) {
+            for (const uid in data) {
+              html += `<div>`;
+              html += `<strong>User ID:</strong> ${uid}<br>`;
+              if (data[uid].completedTests) {
+                html += `<ul>`;
+                for (const testKey in data[uid].completedTests) {
+                  const test = data[uid].completedTests[testKey];
+                  html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%</li>`;
+                }
+                html += `</ul>`;
+              } else {
+                html += `<p>No completed tests.</p>`;
+              }
+              html += `</div>`;
+            }
+          } else {
+            html = '<p>No user data found.</p>';
+          }
+          document.getElementById('adminContent').innerHTML = html;
+        })
+        .catch(err => {
+          console.error("Error fetching admin data:", err);
+        });
+    }
   </script>
 </body>
 </html>

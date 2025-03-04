@@ -1,41 +1,73 @@
 // storage.js
+// Replaces localStorage with Firebase Realtime Database calls
+// for signed-in users. Guests do not persist data.
 
-const STORAGE_KEY = 'SAT_PRACTICE_DATA';
-const COMPLETED_TESTS_KEY = 'COMPLETED_TESTS';
+(function() {
+  const auth = firebase.auth();
+  const db = firebase.database();
 
-// Save current practice session
-function savePracticeSession(practiceData) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(practiceData));
-}
+  // Save current practice session to DB (for signed-in users)
+  function savePracticeSession(practiceData) {
+    const user = auth.currentUser;
+    if (!user) return;  // skip if guest
+    db.ref(`users/${user.uid}/practiceSession`).set(practiceData);
+  }
 
-// Load saved practice session
-function loadPracticeSession() {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    return savedData ? JSON.parse(savedData) : null;
-}
+  // Load saved practice session from DB
+  // Takes a callback, because reading from Firebase is async
+  function loadPracticeSession(callback) {
+    const user = auth.currentUser;
+    if (!user) {
+      callback(null);
+      return;
+    }
+    db.ref(`users/${user.uid}/practiceSession`).once('value')
+      .then(snapshot => {
+        callback(snapshot.val()); // returns the practiceData or null
+      });
+  }
 
-// Clear saved practice session
-function clearPracticeSession() {
-    localStorage.removeItem(STORAGE_KEY);
-}
+  // Clear saved practice session from DB
+  function clearPracticeSession() {
+    const user = auth.currentUser;
+    if (!user) return;
+    db.ref(`users/${user.uid}/practiceSession`).remove();
+  }
 
-// Save completed test
-function saveCompletedTest(testData) {
-    let completedTests = JSON.parse(localStorage.getItem(COMPLETED_TESTS_KEY) || '[]');
-    completedTests.push(testData);
-    localStorage.setItem(COMPLETED_TESTS_KEY, JSON.stringify(completedTests));
-}
+  // Save a completed test result to DB
+  function saveCompletedTest(testData) {
+    const user = auth.currentUser;
+    if (!user) return; // skip for guest
+    // push() appends a new entry in 'completedTests'
+    db.ref(`users/${user.uid}/completedTests`).push(testData);
+  }
 
-// Get all completed tests
-function getCompletedTests() {
-    return JSON.parse(localStorage.getItem(COMPLETED_TESTS_KEY) || '[]');
-}
+  // Get all completed tests from DB
+  // callback gets an array of test objects
+  function getCompletedTests(callback) {
+    const user = auth.currentUser;
+    if (!user) {
+      callback([]);
+      return;
+    }
+    db.ref(`users/${user.uid}/completedTests`).once('value')
+      .then(snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          // data is an object {key1: testObj, key2: testObj, ...}
+          callback(Object.values(data));
+        } else {
+          callback([]);
+        }
+      });
+  }
 
-// Make these functions available globally
-window.satPracticeStorage = {
+  // Expose these functions globally as satPracticeStorage
+  window.satPracticeStorage = {
     savePracticeSession,
     loadPracticeSession,
     clearPracticeSession,
     saveCompletedTest,
     getCompletedTests
-};
+  };
+})();

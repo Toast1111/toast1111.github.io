@@ -435,6 +435,11 @@
         userAvatarEl.src = user.photoURL || 'https://via.placeholder.com/40';
         signInBtn.style.display = 'none';
         signOutBtn.style.display = 'inline-block';
+        // Save/update user's profile in the database
+        db.ref('users/' + user.uid + '/profile').set({
+          name: user.displayName,
+          email: user.email
+        });
       } else {
         userNameEl.textContent = 'Guest';
         userAvatarEl.src = 'https://via.placeholder.com/40';
@@ -674,8 +679,11 @@
           let html = '';
           if (data) {
             for (const uid in data) {
+              // Get the profile data if available
+              const profile = data[uid].profile;
+              const name = (profile && profile.name) ? profile.name : 'Unknown';
               html += `<div>`;
-              html += `<strong>User ID:</strong> ${uid}<br>`;
+              html += `<strong>User:</strong> ${name} (${uid})<br>`;
               if (data[uid].completedTests) {
                 html += `<ul>`;
                 for (const testKey in data[uid].completedTests) {

@@ -29,9 +29,21 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .logo { color: var(--primary-color); font-size: 1.5rem; font-weight: bold; }
-        .user-info { display: flex; align-items: center; }
-        .user-info img { width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; }
+        .logo {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
         .user-info button {
             margin-left: 10px;
             padding: 5px 10px;
@@ -63,8 +75,14 @@
             border-radius: 20px;
             overflow: hidden;
         }
-        .tab { padding: 0.5rem 1rem; cursor: pointer; }
-        .tab.active { background-color: var(--primary-color); color: white; }
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
         button {
             background-color: var(--primary-color);
             color: white;
@@ -109,7 +127,9 @@
             width: 100%;
             transition: background-color 0.3s ease;
         }
-        #optionButtons button:hover { background-color: var(--secondary-color); }
+        #optionButtons button:hover {
+            background-color: var(--secondary-color);
+        }
         #feedbackLabel {
             margin-top: 1rem;
             font-weight: bold;
@@ -151,7 +171,7 @@
             font-size: 1.2rem;
             margin-bottom: 0.5rem;
         }
-        /* Updated Calculator styles */
+        /* Calculator */
         #dosCalculator {
             position: fixed;
             top: 50px;
@@ -199,7 +219,7 @@
         #dosCalculator button:active {
             transform: scale(0.95);
         }
-        /* Settings Menu Modal styles */
+        /* Settings Menu Modal */
         #settingsMenu {
             position: fixed;
             top: 0;
@@ -237,18 +257,40 @@
             font-size: 0.9rem;
         }
     </style>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js"></script>
+    <script>
+      // TODO: Replace with your Firebase config from the console
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "your-project.firebaseapp.com",
+        databaseURL: "https://your-project.firebaseio.com",
+        projectId: "your-project-id",
+        appId: "YOUR_APP_ID"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+
+      // Shortcut references
+      const auth = firebase.auth();
+      const db = firebase.database();
+    </script>
 </head>
 <body>
     <header class="container">
         <div class="logo">SAT Prep</div>
         <div class="user-info">
-            Some Human
-            <img src="https://via.placeholder.com/40" alt="User Avatar">
+            <span id="userName">Guest</span>
+            <img id="userAvatar" src="https://via.placeholder.com/40" alt="User Avatar">
+            <button id="signInBtn">Sign In with Google</button>
+            <button id="signOutBtn" style="display:none;">Sign Out</button>
             <button id="openSettings">Settings</button>
         </div>
     </header>
 
-    <main class="container">
+    <main class="container" id="mainContent">
         <section id="mainMenu">
             <h1>Welcome! Good luck on test day!</h1>
             <div class="card">
@@ -345,335 +387,261 @@
         </div>
     </div>
 
-    <!-- Include the question files -->
+    <!-- Include your existing question scripts -->
     <script src="math-questions.js"></script>
     <script src="verbal-questions.js"></script>
     <script src="writing-questions.js"></script>
+    <script src="popup.js"></script>
+    <script src="dos-calculator.js"></script>
 
-    <!-- Storage Functions (integrated from storage.js) -->
+    <!-- Our new Firebase-based storage -->
+    <script src="storage.js"></script>
+
+    <!-- Main SAT Prep Logic -->
     <script>
-        const STORAGE_KEY = 'SAT_PRACTICE_DATA';
-        const COMPLETED_TESTS_KEY = 'COMPLETED_TESTS';
+        // =============== AUTH SETUP ===============
+        // Prepare Google provider
+        const provider = new firebase.auth.GoogleAuthProvider();
 
-        // Save current practice session
-        function savePracticeSession(practiceData) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(practiceData));
-        }
+        // Buttons for sign in/out
+        const signInBtn = document.getElementById('signInBtn');
+        const signOutBtn = document.getElementById('signOutBtn');
+        const userNameEl = document.getElementById('userName');
+        const userAvatarEl = document.getElementById('userAvatar');
 
-        // Load saved practice session
-        function loadPracticeSession() {
-            const savedData = localStorage.getItem(STORAGE_KEY);
-            return savedData ? JSON.parse(savedData) : null;
-        }
-
-        // Clear saved practice session
-        function clearPracticeSession() {
-            localStorage.removeItem(STORAGE_KEY);
-        }
-
-        // Save completed test
-        function saveCompletedTest(testData) {
-            let completedTests = JSON.parse(localStorage.getItem(COMPLETED_TESTS_KEY) || '[]');
-            completedTests.push(testData);
-            localStorage.setItem(COMPLETED_TESTS_KEY, JSON.stringify(completedTests));
-        }
-
-        // Get all completed tests
-        function getCompletedTests() {
-            return JSON.parse(localStorage.getItem(COMPLETED_TESTS_KEY) || '[]');
-        }
-
-        // Make these functions available globally
-        window.satPracticeStorage = {
-            savePracticeSession,
-            loadPracticeSession,
-            clearPracticeSession,
-            saveCompletedTest,
-            getCompletedTests
+        signInBtn.onclick = () => {
+          auth.signInWithPopup(provider).catch(err => console.error('SignIn failed:', err));
         };
-    </script>
+        signOutBtn.onclick = () => {
+          auth.signOut().catch(err => console.error('SignOut failed:', err));
+        };
 
-    <!-- Main SAT Prep Script -->
-    <script>
-        (() => {
-            // Cache DOM elements
-            const mainMenu = document.getElementById('mainMenu');
-            const practiceView = document.getElementById('practiceView');
-            const practiceTitle = document.getElementById('practiceTitle');
-            const questionLabel = document.getElementById('questionLabel');
-            const optionButtons = document.getElementById('optionButtons');
-            const feedbackLabel = document.getElementById('feedbackLabel');
-            const nextButton = document.getElementById('nextButton');
-            const progressBar = document.getElementById('progressBar');
-            const timeDisplay = document.getElementById('timeRemaining');
-            const toggleCalculatorBtn = document.getElementById('toggleCalculator');
-            const backButton = document.getElementById('backButton');
+        // Listen for login/logout
+        auth.onAuthStateChanged(user => {
+          if (user) {
+            // Signed in
+            userNameEl.textContent = user.displayName || 'User';
+            userAvatarEl.src = user.photoURL || 'https://via.placeholder.com/40';
+            signInBtn.style.display = 'none';
+            signOutBtn.style.display = 'inline-block';
+          } else {
+            // Guest mode
+            userNameEl.textContent = 'Guest';
+            userAvatarEl.src = 'https://via.placeholder.com/40';
+            signInBtn.style.display = 'inline-block';
+            signOutBtn.style.display = 'none';
+          }
+        });
 
-            let currentPractice, currentQuestions, timerInterval;
-            let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
-            const totalQuestions = 5;
+        // ============== MAIN PRACTICE LOGIC ==============
+        const mainMenu = document.getElementById('mainMenu');
+        const practiceView = document.getElementById('practiceView');
+        const practiceTitle = document.getElementById('practiceTitle');
+        const questionLabel = document.getElementById('questionLabel');
+        const optionButtons = document.getElementById('optionButtons');
+        const feedbackLabel = document.getElementById('feedbackLabel');
+        const nextButton = document.getElementById('nextButton');
+        const progressBar = document.getElementById('progressBar');
+        const timeDisplay = document.getElementById('timeRemaining');
+        const toggleCalculatorBtn = document.getElementById('toggleCalculator');
+        const backButton = document.getElementById('backButton');
+        let currentPractice, currentQuestions, timerInterval;
+        let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
+        const totalQuestions = 5;
 
-            // Event listeners for practice start buttons
-            document.querySelectorAll('.start-practice').forEach(btn => {
-                btn.addEventListener('click', () => startPractice(btn.dataset.type));
+        // Start practice event
+        document.querySelectorAll('.start-practice').forEach(btn => {
+          btn.addEventListener('click', () => startPractice(btn.dataset.type));
+        });
+        backButton.addEventListener('click', showMainMenu);
+        nextButton.addEventListener('click', showQuestion);
+        toggleCalculatorBtn.addEventListener('click', toggleCalculator);
+
+        function startPractice(type) {
+          currentPractice = type;
+          mainMenu.style.display = 'none';
+          practiceView.style.display = 'block';
+          practiceTitle.textContent = `${type} Practice`;
+          // Shuffle and slice first 5 questions
+          currentQuestions = shuffleArray(getQuestionsByType(type)).slice(0, totalQuestions);
+          currentQuestionIndex = correctAnswers = 0;
+          timeRemaining = 600;
+          updateProgressBar();
+          startTimer();
+          showQuestion();
+          toggleCalculatorBtn.style.display = type === 'Math' ? 'block' : 'none';
+        }
+
+        function getQuestionsByType(type) {
+          return {
+            Math: mathQuestions,
+            Verbal: verbalQuestions,
+            Writing: writingQuestions
+          }[type] || [];
+        }
+
+        function shuffleArray(array) {
+          return array.sort(() => Math.random() - 0.5);
+        }
+
+        function showQuestion() {
+          if (currentQuestionIndex >= totalQuestions) {
+            finishPractice();
+            return;
+          }
+          const question = currentQuestions[currentQuestionIndex];
+          questionLabel.textContent = question.text;
+          optionButtons.innerHTML = '';
+          feedbackLabel.textContent = '';
+          nextButton.style.display = 'none';
+
+          // Remove previous passage or question number
+          document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
+
+          if (question.hasPassage) {
+            const passageEl = document.createElement('div');
+            passageEl.className = 'passage-container';
+            passageEl.textContent = question.passage;
+            practiceView.insertBefore(passageEl, questionLabel);
+          }
+
+          const questionNumberEl = document.createElement('div');
+          questionNumberEl.className = 'question-number';
+          questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+          practiceView.insertBefore(questionNumberEl, questionLabel);
+
+          question.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
+            btn.addEventListener('click', () => checkAnswer(opt));
+            optionButtons.appendChild(btn);
+          });
+          updateProgressBar();
+        }
+
+        function checkAnswer(answer) {
+          const question = currentQuestions[currentQuestionIndex];
+          const isCorrect = answer === question.correctAnswer;
+          feedbackLabel.textContent = isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${question.correctAnswer}`;
+          feedbackLabel.style.color = isCorrect ? '#4CAF50' : '#F44336';
+          if (isCorrect) correctAnswers++;
+          currentQuestionIndex++;
+          nextButton.style.display = 'block';
+          optionButtons.querySelectorAll('button').forEach(btn => btn.disabled = true);
+          updateProgressBar();
+        }
+
+        function updateProgressBar() {
+          progressBar.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
+        }
+
+        function startTimer() {
+          clearInterval(timerInterval);
+          updateTimerDisplay();
+          timerInterval = setInterval(() => {
+            if (timeRemaining > 0) {
+              timeRemaining--;
+              updateTimerDisplay();
+            } else {
+              clearInterval(timerInterval);
+              finishPractice();
+            }
+          }, 1000);
+        }
+
+        function updateTimerDisplay() {
+          const minutes = Math.floor(timeRemaining / 60);
+          const seconds = timeRemaining % 60;
+          timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function finishPractice() {
+          clearInterval(timerInterval);
+          const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+
+          // Save to DB if logged in
+          const user = auth.currentUser;
+          if (user) {
+            const testData = {
+              type: currentPractice,
+              score: scorePercentage,
+              correctAnswers,
+              totalQuestions,
+              date: new Date().toISOString()
+            };
+            window.satPracticeStorage.saveCompletedTest(testData);
+            alert(`Practice complete! Your score: ${scorePercentage}%. Test saved to your account.`);
+          } else {
+            alert(`Practice complete! Your score: ${scorePercentage}%. (Sign in to save your results)`);
+          }
+
+          showMainMenu();
+        }
+
+        function showMainMenu() {
+          mainMenu.style.display = 'block';
+          practiceView.style.display = 'none';
+          currentQuestionIndex = correctAnswers = 0;
+          timeRemaining = 600;
+          progressBar.style.width = '0%';
+          feedbackLabel.textContent = '';
+          timeDisplay.textContent = '10:00';
+          questionLabel.textContent = '';
+          optionButtons.innerHTML = '';
+          nextButton.style.display = 'none';
+          document.getElementById('dosCalculator').style.display = 'none';
+        }
+
+        // Calculator toggling
+        function toggleCalculator() {
+          const calculator = document.getElementById('dosCalculator');
+          calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // ============== SETTINGS MENU ==============
+        const settingsMenu = document.getElementById('settingsMenu');
+        const settingsOutput = document.getElementById('settingsOutput');
+
+        document.getElementById('openSettings').onclick = () => {
+          settingsMenu.style.display = 'flex';
+        };
+        document.getElementById('btnCloseSettings').onclick = () => {
+          settingsMenu.style.display = 'none';
+        };
+
+        // View session
+        document.getElementById('btnViewSession').onclick = () => {
+          window.satPracticeStorage.loadPracticeSession(session => {
+            settingsOutput.innerText = session
+              ? JSON.stringify(session, null, 2)
+              : 'No saved practice session found.';
+          });
+        };
+        // Clear session
+        document.getElementById('btnClearSession').onclick = () => {
+          window.satPracticeStorage.clearPracticeSession();
+          settingsOutput.innerText = 'Practice session cleared.';
+        };
+        // View completed tests
+        document.getElementById('btnViewTests').onclick = () => {
+          window.satPracticeStorage.getCompletedTests(tests => {
+            settingsOutput.innerText = tests.length
+              ? JSON.stringify(tests, null, 2)
+              : 'No completed tests found.';
+          });
+        };
+        // Clear completed tests
+        document.getElementById('btnClearTests').onclick = () => {
+          const user = auth.currentUser;
+          if (!user) {
+            settingsOutput.innerText = 'Not signed in. No tests to clear.';
+            return;
+          }
+          firebase.database().ref(`users/${user.uid}/completedTests`).remove()
+            .then(() => {
+              settingsOutput.innerText = 'Completed tests cleared.';
             });
-            backButton.addEventListener('click', showMainMenu);
-            nextButton.addEventListener('click', showQuestion);
-            toggleCalculatorBtn.addEventListener('click', toggleCalculator);
-
-            function startPractice(type) {
-                currentPractice = type;
-                mainMenu.style.display = 'none';
-                practiceView.style.display = 'block';
-                practiceTitle.textContent = `${type} Practice`;
-                currentQuestions = shuffleArray(getQuestionsByType(type)).slice(0, totalQuestions);
-                currentQuestionIndex = correctAnswers = 0;
-                timeRemaining = 600;
-                updateProgressBar();
-                startTimer();
-                showQuestion();
-                toggleCalculatorBtn.style.display = type === 'Math' ? 'block' : 'none';
-            }
-
-            function getQuestionsByType(type) {
-                return {
-                    Math: mathQuestions,
-                    Verbal: verbalQuestions,
-                    Writing: writingQuestions
-                }[type] || [];
-            }
-
-            function shuffleArray(array) {
-                return array.sort(() => Math.random() - 0.5);
-            }
-
-            function showQuestion() {
-                if (currentQuestionIndex >= totalQuestions) return finishPractice();
-                const question = currentQuestions[currentQuestionIndex];
-                questionLabel.textContent = question.text;
-                optionButtons.innerHTML = '';
-                feedbackLabel.textContent = '';
-                nextButton.style.display = 'none';
-
-                // Remove previous passage or question number if any
-                document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
-
-                if (question.hasPassage) {
-                    const passageEl = document.createElement('div');
-                    passageEl.className = 'passage-container';
-                    passageEl.textContent = question.passage;
-                    practiceView.insertBefore(passageEl, questionLabel);
-                }
-
-                const questionNumberEl = document.createElement('div');
-                questionNumberEl.className = 'question-number';
-                questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
-                practiceView.insertBefore(questionNumberEl, questionLabel);
-
-                question.options.forEach((opt, idx) => {
-                    const btn = document.createElement('button');
-                    btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
-                    btn.addEventListener('click', () => checkAnswer(opt));
-                    optionButtons.appendChild(btn);
-                });
-                updateProgressBar();
-            }
-
-            function checkAnswer(answer) {
-                const question = currentQuestions[currentQuestionIndex];
-                const isCorrect = answer === question.correctAnswer;
-                feedbackLabel.textContent = isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${question.correctAnswer}`;
-                feedbackLabel.style.color = isCorrect ? '#4CAF50' : '#F44336';
-                if (isCorrect) correctAnswers++;
-                currentQuestionIndex++;
-                nextButton.style.display = 'block';
-                optionButtons.querySelectorAll('button').forEach(btn => btn.disabled = true);
-                updateProgressBar();
-            }
-
-            function updateProgressBar() {
-                progressBar.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
-            }
-
-            function startTimer() {
-                clearInterval(timerInterval);
-                updateTimerDisplay();
-                timerInterval = setInterval(() => {
-                    if (timeRemaining > 0) {
-                        timeRemaining--;
-                        updateTimerDisplay();
-                    } else {
-                        clearInterval(timerInterval);
-                        finishPractice();
-                    }
-                }, 1000);
-            }
-
-            function updateTimerDisplay() {
-                const minutes = Math.floor(timeRemaining / 60);
-                const seconds = timeRemaining % 60;
-                timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-
-            function finishPractice() {
-                clearInterval(timerInterval);
-                // Calculate score and save the test result
-                const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
-                const testData = {
-                    type: currentPractice,
-                    score: scorePercentage,
-                    correctAnswers: correctAnswers,
-                    totalQuestions: totalQuestions,
-                    date: new Date().toISOString()
-                };
-                window.satPracticeStorage.saveCompletedTest(testData);
-                alert(`Practice complete! Your score: ${scorePercentage}%. Test saved.`);
-                showMainMenu();
-            }
-
-            function showMainMenu() {
-                mainMenu.style.display = 'block';
-                practiceView.style.display = 'none';
-                currentQuestionIndex = correctAnswers = 0;
-                timeRemaining = 600;
-                progressBar.style.width = '0%';
-                feedbackLabel.textContent = '';
-                timeDisplay.textContent = '10:00';
-                questionLabel.textContent = '';
-                optionButtons.innerHTML = '';
-                nextButton.style.display = 'none';
-                document.getElementById('dosCalculator').style.display = 'none';
-            }
-
-            // Calculator Code
-            class DOSCalculator {
-                constructor() {
-                    this.display = '0';
-                    this.currentValue = null;
-                    this.operator = null;
-                    this.waitingForSecondOperand = false;
-                    this.init();
-                }
-
-                init() {
-                    this.displayElement = document.getElementById('calculatorDisplay');
-                    this.updateDisplay();
-                    const keys = document.querySelectorAll('#dosCalculator button');
-                    keys.forEach(key => key.addEventListener('click', event => this.handleButton(event.target)));
-                }
-
-                updateDisplay() {
-                    this.displayElement.textContent = this.display;
-                }
-
-                handleButton(button) {
-                    const { action, digit, operator } = button.dataset;
-                    if (digit) {
-                        this.inputDigit(digit);
-                    } else if (operator) {
-                        this.handleOperator(operator);
-                    } else if (action === 'decimal') {
-                        this.inputDecimal();
-                    } else if (action === 'clear') {
-                        this.clear();
-                    }
-                }
-
-                inputDigit(digit) {
-                    if (this.waitingForSecondOperand) {
-                        this.display = digit;
-                        this.waitingForSecondOperand = false;
-                    } else {
-                        this.display = this.display === '0' ? digit : this.display + digit;
-                    }
-                    this.updateDisplay();
-                }
-
-                inputDecimal() {
-                    if (this.waitingForSecondOperand) {
-                        this.display = '0.';
-                        this.waitingForSecondOperand = false;
-                    } else if (!this.display.includes('.')) {
-                        this.display += '.';
-                    }
-                    this.updateDisplay();
-                }
-
-                clear() {
-                    this.display = '0';
-                    this.currentValue = null;
-                    this.operator = null;
-                    this.waitingForSecondOperand = false;
-                    this.updateDisplay();
-                }
-
-                handleOperator(nextOperator) {
-                    const inputValue = parseFloat(this.display);
-                    if (this.operator && this.waitingForSecondOperand) {
-                        this.operator = nextOperator;
-                        return;
-                    }
-                    if (this.currentValue == null && !isNaN(inputValue)) {
-                        this.currentValue = inputValue;
-                    } else if (this.operator) {
-                        const result = this.performCalculation(this.operator, this.currentValue, inputValue);
-                        this.display = String(result);
-                        this.currentValue = result;
-                    }
-                    this.waitingForSecondOperand = true;
-                    this.operator = nextOperator;
-                    this.updateDisplay();
-                }
-
-                performCalculation(operator, firstOperand, secondOperand) {
-                    switch (operator) {
-                        case '+': return firstOperand + secondOperand;
-                        case '-': return firstOperand - secondOperand;
-                        case '*': return firstOperand * secondOperand;
-                        case '/': return firstOperand / secondOperand;
-                        case '=': return secondOperand;
-                    }
-                    return secondOperand;
-                }
-            }
-
-            const calculator = new DOSCalculator();
-
-            function toggleCalculator() {
-                const calculatorDiv = document.getElementById('dosCalculator');
-                calculatorDiv.style.display = calculatorDiv.style.display === 'none' ? 'block' : 'none';
-            }
-
-            window.addEventListener('load', () => {
-                // Calculator is initialized in the DOSCalculator constructor.
-            });
-        })();
-    </script>
-
-    <!-- Settings Menu Script -->
-    <script>
-        document.getElementById('openSettings').addEventListener('click', function() {
-            document.getElementById('settingsMenu').style.display = 'flex';
-        });
-        document.getElementById('btnCloseSettings').addEventListener('click', function() {
-            document.getElementById('settingsMenu').style.display = 'none';
-        });
-        document.getElementById('btnViewSession').addEventListener('click', function() {
-            const session = window.satPracticeStorage.loadPracticeSession();
-            document.getElementById('settingsOutput').innerText = session ? JSON.stringify(session, null, 2) : 'No saved practice session found.';
-        });
-        document.getElementById('btnClearSession').addEventListener('click', function() {
-            window.satPracticeStorage.clearPracticeSession();
-            document.getElementById('settingsOutput').innerText = 'Practice session cleared.';
-        });
-        document.getElementById('btnViewTests').addEventListener('click', function() {
-            const tests = window.satPracticeStorage.getCompletedTests();
-            document.getElementById('settingsOutput').innerText = tests.length ? JSON.stringify(tests, null, 2) : 'No completed tests found.';
-        });
-        document.getElementById('btnClearTests').addEventListener('click', function() {
-            localStorage.removeItem('COMPLETED_TESTS');
-            document.getElementById('settingsOutput').innerText = 'Completed tests cleared.';
-        });
+        };
     </script>
 </body>
 </html>

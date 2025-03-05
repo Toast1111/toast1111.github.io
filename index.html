@@ -171,9 +171,7 @@
       font-size: 1.2rem;
       margin-bottom: 0.5rem;
     }
-    /* =========================================================================
-       Revamped Settings Modal
-    ========================================================================= */
+    /* Revamped Settings Modal */
     #settingsMenu {
       position: fixed;
       top: 0;
@@ -251,9 +249,7 @@
       max-height: 200px;
       overflow-y: auto;
     }
-    /* =========================================================================
-       Calculator Styles (Unchanged)
-    ========================================================================= */
+    /* Calculator (Unchanged) */
     #dosCalculator {
       position: fixed;
       top: 50px;
@@ -301,9 +297,7 @@
     #dosCalculator button:active {
       transform: scale(0.95);
     }
-    /* =========================================================================
-       Admin Panel (Unchanged)
-    ========================================================================= */
+    /* Admin Panel (Unchanged) */
     #adminArea {
       display: none;
       margin-top: 20px;
@@ -351,7 +345,6 @@
       <button id="openSettings">Settings</button>
     </div>
   </header>
-
   <main class="container" id="mainContent">
     <section id="mainMenu">
       <h1>Welcome! Good luck on test day!</h1>
@@ -365,7 +358,6 @@
         </div>
         <p>You may have an upcoming test assigned to you.</p>
       </div>
-      <!-- Container for displaying tests -->
       <div id="testsList"></div>
       <div class="card">
         <div class="section-header">
@@ -389,7 +381,6 @@
         </div>
       </div>
     </section>
-
     <section id="practiceView" class="card">
       <button id="backButton">Back to Menu</button>
       <h2 id="practiceTitle"></h2>
@@ -406,15 +397,12 @@
       <button id="nextButton">Next Question</button>
       <button id="toggleCalculator">Toggle Calculator</button>
     </section>
-
-    <!-- Admin Panel Section (Hidden by default) -->
     <section id="adminArea" class="card">
       <h2>Admin Panel</h2>
       <button id="refreshAdminData">Refresh Data</button>
       <div id="adminContent"></div>
     </section>
   </main>
-
   <!-- Revamped Settings Modal -->
   <div id="settingsMenu">
     <div id="settingsContent">
@@ -432,7 +420,6 @@
       <div id="settingsOutput" class="settings-output"></div>
     </div>
   </div>
-
   <!-- Calculator -->
   <div id="dosCalculator">
     <div id="calculatorDisplay">0</div>
@@ -462,380 +449,367 @@
       <button data-operator="+">+</button>
     </div>
   </div>
-
   <!-- =========================================================================
-       JavaScript Section
-       (Navigation, Auth, Practice Test Logic, Tests Tabs, Test-Taking, Admin Test Creation, Settings)
+       JavaScript Section (Wrapped in DOMContentLoaded)
   ========================================================================= -->
   <script>
-    /* ----------------------------
-       Navigation & Page Switching
-    ----------------------------- */
-    function navigateTo(pageId) {
-      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-    }
-    document.getElementById('navHome').onclick = (e) => { e.preventDefault(); navigateTo('homePage'); };
-    document.getElementById('navPractice').onclick = (e) => { e.preventDefault(); navigateTo('practicePage'); };
-    document.getElementById('navTests').onclick = (e) => {
-      e.preventDefault();
-      navigateTo('testsPage');
-      setActiveTab(activeTab);
-      loadUpcomingTests();
-    };
-    document.getElementById('navSettings').onclick = (e) => {
-      e.preventDefault();
-      document.getElementById('settingsMenu').classList.add('active');
-    };
-    document.getElementById('navCreate').onclick = (e) => {
-      e.preventDefault();
-      if (window.isAdmin) { navigateTo('createTestPage'); }
-      else { alert("Admin privileges required to create tests."); }
-    };
-  
-    /* ----------------------------
-       Firebase Auth Setup
-    ----------------------------- */
-    const provider = new firebase.auth.GoogleAuthProvider();
-    const signInBtn = document.getElementById('signInBtn');
-    const signOutBtn = document.getElementById('signOutBtn');
-    const userNameEl = document.getElementById('userName');
-    const userAvatarEl = document.getElementById('userAvatar');
-    signInBtn.onclick = () => { auth.signInWithPopup(provider).catch(err => console.error('SignIn failed:', err)); };
-    signOutBtn.onclick = () => { auth.signOut().catch(err => console.error('SignOut failed:', err)); };
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        userNameEl.textContent = user.displayName || 'User';
-        userAvatarEl.src = user.photoURL || 'https://via.placeholder.com/40';
-        signInBtn.style.display = 'none';
-        signOutBtn.style.display = 'inline-block';
-        db.ref('users/' + user.uid + '/profile').set({ name: user.displayName, email: user.email });
-      } else {
-        userNameEl.textContent = 'Guest';
-        userAvatarEl.src = 'https://via.placeholder.com/40';
-        signInBtn.style.display = 'inline-block';
-        signOutBtn.style.display = 'none';
-        document.getElementById('adminArea').style.display = 'none';
+    document.addEventListener("DOMContentLoaded", function() {
+      /* Navigation & Page Switching */
+      function navigateTo(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
       }
-    });
-  
-    /* ----------------------------
-       MAIN PRACTICE TEST LOGIC
-    ----------------------------- */
-    let currentPractice, currentQuestions, timerInterval;
-    let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
-    const totalQuestions = 5;
-    document.querySelectorAll('.start-practice').forEach(btn => { btn.addEventListener('click', () => startPractice(btn.dataset.type)); });
-    document.getElementById('backButton').addEventListener('click', showMainMenu);
-    document.getElementById('nextButton').addEventListener('click', showQuestion);
-    document.getElementById('toggleCalculator').addEventListener('click', toggleCalculator);
-  
-    function startPractice(type) {
-      currentPractice = type;
-      mainMenu.style.display = 'none';
-      practiceView.style.display = 'block';
-      practiceTitle.textContent = `${type} Practice`;
-      currentQuestions = shuffleArray(getQuestionsByType(type)).slice(0, totalQuestions);
-      currentQuestionIndex = correctAnswers = 0;
-      timeRemaining = 600;
-      updateProgressBar();
-      startTimer();
-      showQuestion();
-      toggleCalculatorBtn.style.display = type === 'Math' ? 'block' : 'none';
-    }
-  
-    function getQuestionsByType(type) {
-      return { Math: mathQuestions, Verbal: verbalQuestions, Writing: writingQuestions }[type] || [];
-    }
-  
-    function shuffleArray(array) { return array.sort(() => Math.random() - 0.5); }
-  
-    function showQuestion() {
-      if (currentQuestionIndex >= totalQuestions) { finishPractice(); return; }
-      const question = currentQuestions[currentQuestionIndex];
-      questionLabel.textContent = question.text;
-      optionButtons.innerHTML = '';
-      feedbackLabel.textContent = '';
-      nextButton.style.display = 'none';
-      document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
-      if (question.hasPassage) {
-        const passageEl = document.createElement('div');
-        passageEl.className = 'passage-container';
-        passageEl.textContent = question.passage;
-        practiceView.insertBefore(passageEl, questionLabel);
-      }
-      const questionNumberEl = document.createElement('div');
-      questionNumberEl.className = 'question-number';
-      questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
-      practiceView.insertBefore(questionNumberEl, questionLabel);
-      question.options.forEach((opt, idx) => {
-        const btn = document.createElement('button');
-        btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
-        btn.addEventListener('click', () => checkAnswer(opt));
-        optionButtons.appendChild(btn);
+      document.getElementById('navHome').onclick = (e) => { e.preventDefault(); navigateTo('homePage'); };
+      document.getElementById('navPractice').onclick = (e) => { e.preventDefault(); navigateTo('practicePage'); };
+      document.getElementById('navTests').onclick = (e) => {
+        e.preventDefault();
+        navigateTo('testsPage');
+        setActiveTab(activeTab);
+        loadUpcomingTests();
+      };
+      document.getElementById('navSettings').onclick = (e) => {
+        e.preventDefault();
+        document.getElementById('settingsMenu').classList.add('active');
+      };
+      document.getElementById('navCreate').onclick = (e) => {
+        e.preventDefault();
+        if (window.isAdmin) { navigateTo('createTestPage'); }
+        else { alert("Admin privileges required to create tests."); }
+      };
+
+      /* Firebase Auth Setup */
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const signInBtn = document.getElementById('signInBtn');
+      const signOutBtn = document.getElementById('signOutBtn');
+      const userNameEl = document.getElementById('userName');
+      const userAvatarEl = document.getElementById('userAvatar');
+      signInBtn.onclick = () => { auth.signInWithPopup(provider).catch(err => console.error('SignIn failed:', err)); };
+      signOutBtn.onclick = () => { auth.signOut().catch(err => console.error('SignOut failed:', err)); };
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          userNameEl.textContent = user.displayName || 'User';
+          userAvatarEl.src = user.photoURL || 'https://via.placeholder.com/40';
+          signInBtn.style.display = 'none';
+          signOutBtn.style.display = 'inline-block';
+          db.ref('users/' + user.uid + '/profile').set({ name: user.displayName, email: user.email });
+        } else {
+          userNameEl.textContent = 'Guest';
+          userAvatarEl.src = 'https://via.placeholder.com/40';
+          signInBtn.style.display = 'inline-block';
+          signOutBtn.style.display = 'none';
+          document.getElementById('adminArea').style.display = 'none';
+        }
       });
-      updateProgressBar();
-    }
-  
-    function checkAnswer(answer) {
-      const question = currentQuestions[currentQuestionIndex];
-      const isCorrect = answer === question.correctAnswer;
-      feedbackLabel.textContent = isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${question.correctAnswer}`;
-      feedbackLabel.style.color = isCorrect ? '#4CAF50' : '#F44336';
-      if (isCorrect) correctAnswers++;
-      currentQuestionIndex++;
-      nextButton.style.display = 'block';
-      document.querySelectorAll('#optionButtons button').forEach(btn => btn.disabled = true);
-      updateProgressBar();
-    }
-  
-    function updateProgressBar() {
-      progressBar.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
-    }
-  
-    function startTimer() {
-      clearInterval(timerInterval);
-      updateTimerDisplay();
-      timerInterval = setInterval(() => {
-        if (timeRemaining > 0) { timeRemaining--; updateTimerDisplay(); }
-        else { clearInterval(timerInterval); finishPractice(); }
-      }, 1000);
-    }
-  
-    function updateTimerDisplay() {
-      const minutes = Math.floor(timeRemaining / 60);
-      const seconds = timeRemaining % 60;
-      timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-  
-    function finishPractice() {
-      clearInterval(timerInterval);
-      const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
-      const questionIDs = currentQuestions.map(q => q.id);
-      const user = auth.currentUser;
-      if (user) {
-        const testData = {
-          type: currentPractice,
-          score: scorePercentage,
-          correctAnswers,
-          totalQuestions,
-          date: new Date().toISOString(),
-          questionIDs: questionIDs
-        };
-        window.satPracticeStorage.saveCompletedTest(testData);
-        alert(`Practice complete! Your score: ${scorePercentage}%. Test saved to your account.`);
-      } else {
-        alert(`Practice complete! Your score: ${scorePercentage}%. (Sign in to save your results)`);
+
+      /* Main Practice Test Logic */
+      let currentPractice, currentQuestions, timerInterval;
+      let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
+      const totalQuestions = 5;
+      const mainMenu = document.getElementById('mainMenu');
+      const practiceView = document.getElementById('practiceView');
+      const practiceTitle = document.getElementById('practiceTitle');
+      const questionLabel = document.getElementById('questionLabel');
+      const optionButtons = document.getElementById('optionButtons');
+      const feedbackLabel = document.getElementById('feedbackLabel');
+      const nextButton = document.getElementById('nextButton');
+      const progressBar = document.getElementById('progressBar');
+      const timeDisplay = document.getElementById('timeRemaining');
+      const toggleCalculatorBtn = document.getElementById('toggleCalculator');
+      const backButton = document.getElementById('backButton');
+      
+      document.querySelectorAll('.start-practice').forEach(btn => {
+        btn.addEventListener('click', () => startPractice(btn.dataset.type));
+      });
+      backButton.addEventListener('click', showMainMenu);
+      nextButton.addEventListener('click', showQuestion);
+      toggleCalculatorBtn.addEventListener('click', toggleCalculator);
+      
+      function startPractice(type) {
+        currentPractice = type;
+        mainMenu.style.display = 'none';
+        practiceView.style.display = 'block';
+        practiceTitle.textContent = `${type} Practice`;
+        currentQuestions = shuffleArray(getQuestionsByType(type)).slice(0, totalQuestions);
+        currentQuestionIndex = correctAnswers = 0;
+        timeRemaining = 600;
+        updateProgressBar();
+        startTimer();
+        showQuestion();
+        toggleCalculatorBtn.style.display = type === 'Math' ? 'block' : 'none';
       }
-      showMainMenu();
-    }
-  
-    function showMainMenu() {
-      mainMenu.style.display = 'block';
-      practiceView.style.display = 'none';
-      currentQuestionIndex = correctAnswers = 0;
-      timeRemaining = 600;
-      progressBar.style.width = '0%';
-      feedbackLabel.textContent = '';
-      timeDisplay.textContent = '10:00';
-      questionLabel.textContent = '';
-      optionButtons.innerHTML = '';
-      nextButton.style.display = 'none';
-      document.getElementById('dosCalculator').style.display = 'none';
-    }
-  
-    function toggleCalculator() {
-      const calculator = document.getElementById('dosCalculator');
-      calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
-    }
-  
-    /* ----------------------------
-       TEST TABS FUNCTIONALITY
-    ----------------------------- */
-    const activeTab = document.getElementById('activeTab');
-    const pastTab = document.getElementById('pastTab');
-    activeTab.onclick = () => { setActiveTab(activeTab); loadUpcomingTests(); };
-    pastTab.onclick = () => { setActiveTab(pastTab); loadPastTests(); };
-    function setActiveTab(tab) {
-      activeTab.classList.remove('active');
-      pastTab.classList.remove('active');
-      tab.classList.add('active');
-    }
-  
-    function loadUpcomingTests() {
-      const testsList = document.getElementById('testsList');
-      testsList.innerHTML = "Loading upcoming tests...";
-      if (window.satPracticeStorage.getAssignedTests) {
-        window.satPracticeStorage.getAssignedTests(tests => {
+      
+      function getQuestionsByType(type) {
+        return { Math: mathQuestions, Verbal: verbalQuestions, Writing: writingQuestions }[type] || [];
+      }
+      
+      function shuffleArray(array) { return array.sort(() => Math.random() - 0.5); }
+      
+      function showQuestion() {
+        if (currentQuestionIndex >= totalQuestions) { finishPractice(); return; }
+        const question = currentQuestions[currentQuestionIndex];
+        questionLabel.textContent = question.text;
+        optionButtons.innerHTML = '';
+        feedbackLabel.textContent = '';
+        nextButton.style.display = 'none';
+        document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
+        if (question.hasPassage) {
+          const passageEl = document.createElement('div');
+          passageEl.className = 'passage-container';
+          passageEl.textContent = question.passage;
+          practiceView.insertBefore(passageEl, questionLabel);
+        }
+        const questionNumberEl = document.createElement('div');
+        questionNumberEl.className = 'question-number';
+        questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+        practiceView.insertBefore(questionNumberEl, questionLabel);
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
+          btn.addEventListener('click', () => checkAnswer(opt));
+          optionButtons.appendChild(btn);
+        });
+        updateProgressBar();
+      }
+      
+      function checkAnswer(answer) {
+        const question = currentQuestions[currentQuestionIndex];
+        const isCorrect = answer === question.correctAnswer;
+        feedbackLabel.textContent = isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${question.correctAnswer}`;
+        feedbackLabel.style.color = isCorrect ? '#4CAF50' : '#F44336';
+        if (isCorrect) correctAnswers++;
+        currentQuestionIndex++;
+        nextButton.style.display = 'block';
+        document.querySelectorAll('#optionButtons button').forEach(btn => btn.disabled = true);
+        updateProgressBar();
+      }
+      
+      function updateProgressBar() {
+        progressBar.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
+      }
+      
+      function startTimer() {
+        clearInterval(timerInterval);
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+          if (timeRemaining > 0) { timeRemaining--; updateTimerDisplay(); }
+          else { clearInterval(timerInterval); finishPractice(); }
+        }, 1000);
+      }
+      
+      function updateTimerDisplay() {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+      
+      function finishPractice() {
+        clearInterval(timerInterval);
+        const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+        const questionIDs = currentQuestions.map(q => q.id);
+        const user = auth.currentUser;
+        if (user) {
+          const testData = {
+            type: currentPractice,
+            score: scorePercentage,
+            correctAnswers,
+            totalQuestions,
+            date: new Date().toISOString(),
+            questionIDs: questionIDs
+          };
+          window.satPracticeStorage.saveCompletedTest(testData);
+          alert(`Practice complete! Your score: ${scorePercentage}%. Test saved to your account.`);
+        } else {
+          alert(`Practice complete! Your score: ${scorePercentage}%. (Sign in to save your results)`);
+        }
+        showMainMenu();
+      }
+      
+      function showMainMenu() {
+        mainMenu.style.display = 'block';
+        practiceView.style.display = 'none';
+        currentQuestionIndex = correctAnswers = 0;
+        timeRemaining = 600;
+        progressBar.style.width = '0%';
+        feedbackLabel.textContent = '';
+        timeDisplay.textContent = '10:00';
+        questionLabel.textContent = '';
+        optionButtons.innerHTML = '';
+        nextButton.style.display = 'none';
+        document.getElementById('dosCalculator').style.display = 'none';
+      }
+      
+      function toggleCalculator() {
+        const calculator = document.getElementById('dosCalculator');
+        calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
+      }
+      
+      /* Tests Tabs Functionality */
+      const activeTab = document.getElementById('activeTab');
+      const pastTab = document.getElementById('pastTab');
+      activeTab.onclick = () => { setActiveTab(activeTab); loadUpcomingTests(); };
+      pastTab.onclick = () => { setActiveTab(pastTab); loadPastTests(); };
+      function setActiveTab(tab) {
+        activeTab.classList.remove('active');
+        pastTab.classList.remove('active');
+        tab.classList.add('active');
+      }
+      
+      function loadUpcomingTests() {
+        const testsList = document.getElementById('testsList');
+        testsList.innerHTML = "Loading upcoming tests...";
+        if (window.satPracticeStorage.getAssignedTests) {
+          window.satPracticeStorage.getAssignedTests(tests => {
+            if (tests.length > 0) {
+              let html = "<h3>Upcoming Tests</h3><ul>";
+              tests.forEach(test => {
+                html += `<li style="cursor:pointer;" onclick="takeTest(${JSON.stringify(test)})">${test.type} Test scheduled for ${new Date(test.date).toLocaleString()}`;
+                if (test.questionIDs) { html += `<br><small>Questions: ${test.questionIDs.join(', ')}</small>`; }
+                html += "</li>";
+              });
+              html += "</ul>";
+              testsList.innerHTML = html;
+            } else { testsList.innerHTML = "No upcoming tests found."; }
+          });
+        } else { testsList.innerHTML = "Upcoming tests functionality is not available."; }
+      }
+      
+      function loadPastTests() {
+        const testsList = document.getElementById('testsList');
+        testsList.innerHTML = "Loading past tests...";
+        window.satPracticeStorage.getCompletedTests(tests => {
           if (tests.length > 0) {
-            let html = "<h3>Upcoming Tests</h3><ul>";
+            let html = "<h3>Past Tests</h3><ul>";
             tests.forEach(test => {
-              html += `<li>${test.type} Test scheduled for ${new Date(test.date).toLocaleString()}`;
-              if (test.questionIDs) {
-                html += `<br><small>Questions: ${test.questionIDs.join(', ')}</small>`;
-              }
+              html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%`;
+              if (test.questionIDs) { html += `<br><small>Questions: ${test.questionIDs.join(', ')}</small>`; }
               html += "</li>";
             });
             html += "</ul>";
             testsList.innerHTML = html;
-          } else { testsList.innerHTML = "No upcoming tests found."; }
+          } else { testsList.innerHTML = "No past tests found."; }
         });
-      } else { testsList.innerHTML = "Upcoming tests functionality is not available."; }
-    }
-  
-    function loadPastTests() {
-      const testsList = document.getElementById('testsList');
-      testsList.innerHTML = "Loading past tests...";
-      window.satPracticeStorage.getCompletedTests(tests => {
-        if (tests.length > 0) {
-          let html = "<h3>Past Tests</h3><ul>";
-          tests.forEach(test => {
-            html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%`;
-            if (test.questionIDs) { html += `<br><small>Questions: ${test.questionIDs.join(', ')}</small>`; }
-            html += "</li>";
-          });
-          html += "</ul>";
-          testsList.innerHTML = html;
-        } else { testsList.innerHTML = "No past tests found."; }
-      });
-    }
-  
-    /* ----------------------------
-       TEST-TAKING FROM ASSIGNED TEST
-    ----------------------------- */
-    function takeTest(testData) {
-      let bank;
-      const type = testData.type.toLowerCase();
-      if (type === "math") bank = mathQuestions;
-      else if (type === "verbal") bank = verbalQuestions;
-      else if (type === "writing") bank = writingQuestions;
-      else { alert("Unknown test type."); return; }
-      const ids = testData.questionIDs.map(id => parseInt(id, 10));
-      currentQuestions = bank.filter(q => ids.includes(q.id));
-      if (currentQuestions.length === 0) { alert("No matching questions found for this test."); return; }
-      currentPractice = testData.type;
-      currentQuestionIndex = 0;
-      correctAnswers = 0;
-      timeRemaining = 600;
-      navigateTo("practicePage");
-      document.getElementById("practiceTitle").textContent = `${testData.type} Test`;
-      updateProgressBar();
-      startTimer();
-      showQuestion();
-    }
-  
-    /* ----------------------------
-       ADMIN TEST CREATION PAGE
-    ----------------------------- */
-    document.getElementById('navCreate').onclick = (e) => {
-      e.preventDefault();
-      if (window.isAdmin) { navigateTo('createTestPage'); }
-      else { alert("Admin privileges required to create tests."); }
-    };
-    document.getElementById('backToHomeFromCreate').onclick = () => { navigateTo('homePage'); };
-    document.getElementById('testForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const type = document.getElementById('testType').value;
-      const date = document.getElementById('testDate').value;
-      const questionIDsStr = document.getElementById('questionIDs').value;
-      const questionIDs = questionIDsStr.split(',').map(id => id.trim());
-      if (!type || !date || questionIDs.length === 0) {
-        document.getElementById('createTestOutput').innerText = "Please complete all fields.";
-        return;
       }
-      const user = auth.currentUser;
-      if (!user) { alert("You must be signed in to create a test."); return; }
-      const testData = { type: type, date: date, questionIDs: questionIDs };
-      db.ref(`assignedTests/${user.uid}`).push(testData)
-        .then(() => {
-          document.getElementById('createTestOutput').innerText = "Test created successfully.";
-          document.getElementById('testForm').reset();
-        })
-        .catch(err => {
-          document.getElementById('createTestOutput').innerText = "Error creating test: " + err.message;
+      
+      /* Test-Taking from Assigned Test */
+      window.takeTest = function(testData) {
+        let bank;
+        const type = testData.type.toLowerCase();
+        if (type === "math") bank = mathQuestions;
+        else if (type === "verbal") bank = verbalQuestions;
+        else if (type === "writing") bank = writingQuestions;
+        else { alert("Unknown test type."); return; }
+        const ids = testData.questionIDs.map(id => parseInt(id, 10));
+        currentQuestions = bank.filter(q => ids.includes(q.id));
+        if (currentQuestions.length === 0) { alert("No matching questions found for this test."); return; }
+        currentPractice = testData.type;
+        currentQuestionIndex = 0;
+        correctAnswers = 0;
+        timeRemaining = 600;
+        navigateTo("practicePage");
+        document.getElementById("practiceTitle").textContent = `${testData.type} Test`;
+        updateProgressBar();
+        startTimer();
+        showQuestion();
+      }
+      
+      /* Admin Test Creation Page (if present) */
+      const createTestPage = document.getElementById('createTestPage');
+      if (createTestPage) {
+        document.getElementById('backToHomeFromCreate').onclick = () => { navigateTo('homePage'); };
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const type = document.getElementById('testType').value;
+          const date = document.getElementById('testDate').value;
+          const questionIDsStr = document.getElementById('questionIDs').value;
+          const questionIDs = questionIDsStr.split(',').map(id => id.trim());
+          if (!type || !date || questionIDs.length === 0) {
+            document.getElementById('createTestOutput').innerText = "Please complete all fields.";
+            return;
+          }
+          const user = auth.currentUser;
+          if (!user) { alert("You must be signed in to create a test."); return; }
+          const testData = { type: type, date: date, questionIDs: questionIDs };
+          db.ref(`assignedTests/${user.uid}`).push(testData)
+            .then(() => {
+              document.getElementById('createTestOutput').innerText = "Test created successfully.";
+              document.getElementById('testForm').reset();
+            })
+            .catch(err => {
+              document.getElementById('createTestOutput').innerText = "Error creating test: " + err.message;
+            });
         });
-    });
-  
-    /* ----------------------------
-       SETTINGS MODAL
-    ----------------------------- */
-    const settingsMenu = document.getElementById('settingsMenu');
-    const settingsOutput = document.getElementById('settingsOutput');
-    document.getElementById('btnCloseSettings').onclick = () => { settingsMenu.classList.remove('active'); };
-    document.getElementById('btnViewSession').onclick = () => {
-      window.satPracticeStorage.loadPracticeSession(session => {
-        settingsOutput.innerText = session ? JSON.stringify(session, null, 2) : 'No saved practice session found.';
-      });
-    };
-    document.getElementById('btnClearSession').onclick = () => {
-      window.satPracticeStorage.clearPracticeSession();
-      settingsOutput.innerText = 'Practice session cleared.';
-    };
-    document.getElementById('btnViewTests').onclick = () => {
-      window.satPracticeStorage.getCompletedTests(tests => {
-        settingsOutput.innerText = tests.length ? JSON.stringify(tests, null, 2) : 'No completed tests found.';
-      });
-    };
-    document.getElementById('btnClearTests').onclick = () => {
-      const user = auth.currentUser;
-      if (!user) {
-        settingsOutput.innerText = 'Not signed in. No tests to clear.';
-        return;
       }
-      firebase.database().ref(`users/${user.uid}/completedTests`).remove()
-        .then(() => { settingsOutput.innerText = 'Completed tests cleared.'; });
-    };
-  
-    /* ----------------------------
-       ADMIN FUNCTIONALITY
-    ----------------------------- */
-    document.getElementById('btnAdminLogin').onclick = () => {
-      if (!auth.currentUser) {
-        alert("You must be signed in to become an admin.");
-        return;
+      
+      /* Settings Modal Functionality */
+      const settingsMenu = document.getElementById('settingsMenu');
+      const settingsOutput = document.getElementById('settingsOutput');
+      document.getElementById('btnCloseSettings').onclick = () => { settingsMenu.classList.remove('active'); };
+      document.getElementById('btnViewSession').onclick = () => {
+        window.satPracticeStorage.loadPracticeSession(session => {
+          settingsOutput.innerText = session ? JSON.stringify(session, null, 2) : 'No saved practice session found.';
+        });
+      };
+      document.getElementById('btnClearSession').onclick = () => {
+        window.satPracticeStorage.clearPracticeSession();
+        settingsOutput.innerText = 'Practice session cleared.';
+      };
+      document.getElementById('btnViewTests').onclick = () => {
+        window.satPracticeStorage.getCompletedTests(tests => {
+          settingsOutput.innerText = tests.length ? JSON.stringify(tests, null, 2) : 'No completed tests found.';
+        });
+      };
+      document.getElementById('btnClearTests').onclick = () => {
+        const user = auth.currentUser;
+        if (!user) { settingsOutput.innerText = 'Not signed in. No tests to clear.'; return; }
+        firebase.database().ref(`users/${user.uid}/completedTests`).remove()
+          .then(() => { settingsOutput.innerText = 'Completed tests cleared.'; });
+      };
+      
+      /* Admin Functionality */
+      document.getElementById('btnAdminLogin').onclick = () => {
+        if (!auth.currentUser) { alert("You must be signed in to become an admin."); return; }
+        const code = prompt("Enter the 4-digit admin code:");
+        if (code === "1234") {
+          window.isAdmin = true;
+          alert("Admin privileges granted.");
+          document.getElementById('adminArea').style.display = 'block';
+          fetchAdminData();
+        } else { alert("Incorrect code."); }
+      };
+      document.getElementById('refreshAdminData').onclick = fetchAdminData;
+      function fetchAdminData() {
+        firebase.database().ref('users').once('value')
+          .then(snapshot => {
+            const data = snapshot.val();
+            let html = '';
+            if (data) {
+              for (const uid in data) {
+                const profile = data[uid].profile;
+                const name = (profile && profile.name) ? profile.name : 'Unknown';
+                html += `<div><strong>User:</strong> ${name} (${uid})<br>`;
+                if (data[uid].completedTests) {
+                  html += `<ul>`;
+                  for (const testKey in data[uid].completedTests) {
+                    const test = data[uid].completedTests[testKey];
+                    html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%<br>
+                             <small>Questions: ${test.questionIDs.join(', ')}</small></li>`;
+                  }
+                  html += `</ul>`;
+                } else { html += `<p>No completed tests.</p>`; }
+                html += `</div>`;
+              }
+            } else { html = '<p>No user data found.</p>'; }
+            document.getElementById('adminContent').innerHTML = html;
+          })
+          .catch(err => { console.error("Error fetching admin data:", err); });
       }
-      const code = prompt("Enter the 4-digit admin code:");
-      if (code === "1234") {  // Change as needed
-        window.isAdmin = true;
-        alert("Admin privileges granted.");
-        document.getElementById('adminArea').style.display = 'block';
-        fetchAdminData();
-      } else { alert("Incorrect code."); }
-    };
-    document.getElementById('refreshAdminData').onclick = fetchAdminData;
-    function fetchAdminData() {
-      firebase.database().ref('users').once('value')
-        .then(snapshot => {
-          const data = snapshot.val();
-          let html = '';
-          if (data) {
-            for (const uid in data) {
-              const profile = data[uid].profile;
-              const name = (profile && profile.name) ? profile.name : 'Unknown';
-              html += `<div><strong>User:</strong> ${name} (${uid})<br>`;
-              if (data[uid].completedTests) {
-                html += `<ul>`;
-                for (const testKey in data[uid].completedTests) {
-                  const test = data[uid].completedTests[testKey];
-                  html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%<br>
-                           <small>Questions: ${test.questionIDs.join(', ')}</small></li>`;
-                }
-                html += `</ul>`;
-              } else { html += `<p>No completed tests.</p>`; }
-              html += `</div>`;
-            }
-          } else { html = '<p>No user data found.</p>'; }
-          document.getElementById('adminContent').innerHTML = html;
-        })
-        .catch(err => { console.error("Error fetching admin data:", err); });
-  
-    /* ----------------------------
-       On Load: Default to Home Page / Upcoming Tests
-    ----------------------------- */
-    window.addEventListener('load', () => {
-      navigateTo('homePage');
-      setActiveTab(activeTab);
-      loadUpcomingTests();
+      
+      /* On Load: Default to Home Page and load upcoming tests */
+      window.addEventListener('load', () => {
+        navigateTo('homePage');
+        setActiveTab(activeTab);
+        loadUpcomingTests();
+      });
     });
   </script>
 </body>

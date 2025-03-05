@@ -4,277 +4,238 @@
   <meta charset="UTF-8">
   <title>SAT Prep</title>
   <style>
-    :root {
-      --primary-color: #4a6ee0;
-      --secondary-color: #f0f4f8;
-      --text-color: #333;
-      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }
+    /* Base Reset and Fonts */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-family);
-      background-color: var(--secondary-color);
-      color: var(--text-color);
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      color: #333;
       line-height: 1.6;
-      font-size: 16px;
+      overflow-x: hidden;
     }
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    a { text-decoration: none; }
+
+    /* Navigation Bar */
     header {
-      background-color: white;
-      padding: 1rem 0;
-      margin-bottom: 2rem;
+      background: #fff;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
+      justify-content: space-between;
     }
     .logo {
-      color: var(--primary-color);
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: bold;
+      color: #4a6ee0;
     }
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+    nav a {
+      font-size: 1rem;
+      padding: 5px 10px;
+      color: #333;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: #4a6ee0; }
+
+    /* User Info */
     .user-info {
       display: flex;
       align-items: center;
+      gap: 10px;
     }
     .user-info img {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      margin-left: 10px;
     }
     .user-info button {
-      margin-left: 10px;
+      background: #4a6ee0;
+      border: none;
+      color: #fff;
       padding: 5px 10px;
-      font-size: 0.9rem;
-      border: none;
       border-radius: 5px;
-      background-color: var(--primary-color);
-      color: white;
       cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s;
     }
-    h1 { font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem; }
+    .user-info button:hover { background: #3558b2; }
+
+    /* Page Sections */
+    .page {
+      display: none;
+      opacity: 0;
+      transform: translateX(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      padding: 20px;
+      min-height: calc(100vh - 70px);
+    }
+    .page.active {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Cards */
     .card {
-      background-color: white;
+      background: #fff;
       border-radius: 8px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .tab-container {
-      display: flex;
-      background-color: #e0e0e0;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-    .tab {
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-    }
-    .tab.active {
-      background-color: var(--primary-color);
-      color: white;
-    }
+
+    /* Buttons (General) */
     button {
-      background-color: var(--primary-color);
-      color: white;
+      background: #4a6ee0;
+      color: #fff;
       border: none;
-      padding: 12px 20px;
-      margin: 10px 0;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 20px;
-      transition: background-color 0.3s ease;
-      width: 100%;
-    }
-    button:hover { background-color: #3558b2; }
-    .practice-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .practice-item .icon {
-      font-size: 2rem;
-      margin-right: 1rem;
-      width: 50px;
-      height: 50px;
-      min-width: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--secondary-color);
+      padding: 10px 20px;
       border-radius: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
     }
-    #practiceView { display: none; }
-    #questionLabel {
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-    }
-    #optionButtons button {
-      background-color: white;
-      color: var(--text-color);
-      border: 1px solid #e0e0e0;
-      margin: 0.5rem 0;
-      text-align: left;
-      width: 100%;
-      transition: background-color 0.3s ease;
-    }
-    #optionButtons button:hover {
-      background-color: var(--secondary-color);
-    }
-    #feedbackLabel {
-      margin-top: 1rem;
-      font-weight: bold;
-      text-align: center;
+    button:hover { background: #3558b2; }
+
+    /* Practice Test Styles */
+    #practiceView button {
+      margin-top: 10px;
     }
     .progress-container {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px 0;
     }
     .progress-bar {
       flex-grow: 1;
       height: 8px;
-      background-color: #e0e0e0;
+      background: #ddd;
       border-radius: 4px;
-      margin: 0 1rem;
       overflow: hidden;
-      min-width: 100px;
     }
     .progress {
       height: 100%;
-      background-color: var(--primary-color);
       width: 0%;
+      background: #4a6ee0;
       transition: width 0.5s ease;
     }
     .passage-container {
-      background-color: #f8f9fa;
+      background: #f8f9fa;
       border: 1px solid #e9ecef;
       border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
+      padding: 15px;
+      margin-bottom: 15px;
       font-size: 0.9rem;
-      line-height: 1.6;
     }
     .question-number {
       font-weight: bold;
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
     }
-    /* Calculator */
-    #dosCalculator {
-      position: fixed;
-      top: 50px;
-      right: 20px;
-      background-color: #f8f9fa;
+
+    /* Options Buttons */
+    #optionButtons button {
+      background: #fff;
       color: #333;
-      padding: 20px;
-      border: 2px solid #4a6ee0;
-      border-radius: 12px;
-      font-family: 'Courier New', monospace;
-      display: none;
-      z-index: 1000;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e0e0e0;
+      margin: 5px 0;
+      text-align: left;
+      width: 100%;
+      padding: 10px;
+      transition: background 0.3s ease;
     }
-    #calculatorDisplay {
-      background-color: #222;
-      padding: 15px;
-      margin-bottom: 20px;
-      text-align: right;
-      color: #0f0;
-      font-size: 1.5rem;
-      border-radius: 8px;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-      height: 50px;
+    #optionButtons button:hover { background: #f0f4f8; }
+
+    /* Tabs on Tests Page */
+    .tab-container {
       display: flex;
-      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
     }
-    #dosCalculator button {
-      width: 60px;
-      height: 60px;
-      margin: 5px;
-      background-color: #4a6ee0;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.2rem;
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 25px;
+      background: #ddd;
       cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.1s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s;
     }
-    #dosCalculator button:hover {
-      background-color: #3558b2;
-      transform: scale(1.05);
+    .tab.active {
+      background: #4a6ee0;
+      color: #fff;
     }
-    #dosCalculator button:active {
-      transform: scale(0.95);
-    }
-    /* Settings Menu Modal */
+    #testsList ul { list-style: none; padding-left: 0; }
+    #testsList li { padding: 10px; border-bottom: 1px solid #eee; }
+    #testsList li small { color: #777; }
+
+    /* Settings Modal */
     #settingsMenu {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0,0,0,0.5);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 2000;
     }
     #settingsContent {
-      background: white;
+      background: #fff;
       padding: 20px;
       border-radius: 8px;
       width: 90%;
       max-width: 500px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
-    #settingsContent h2 {
-      margin-bottom: 1rem;
-    }
-    #settingsContent button {
-      margin: 5px 0;
-      width: 100%;
-    }
+    #settingsContent h2 { margin-bottom: 10px; }
+    #settingsContent button { margin: 5px 0; width: 100%; }
     #settingsOutput {
       margin-top: 10px;
       background: #f0f4f8;
       padding: 10px;
       border-radius: 4px;
-      min-height: 50px;
-      white-space: pre-wrap;
       font-size: 0.9rem;
     }
-    /* Admin Panel */
-    #adminArea {
+
+    /* Calculator (Floating) */
+    #dosCalculator {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      background: #fff;
+      padding: 15px;
+      border: 2px solid #4a6ee0;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       display: none;
-      margin-top: 20px;
+      z-index: 3000;
     }
-    #adminArea h2 {
-      margin-bottom: 1rem;
-    }
-    #adminContent div {
-      border-bottom: 1px solid #ccc;
-      padding: 10px 0;
+    #calculatorDisplay {
+      background: #222;
+      color: #0f0;
+      padding: 10px;
+      margin-bottom: 10px;
+      text-align: right;
+      border-radius: 4px;
+      font-size: 1.2rem;
     }
   </style>
-  <!-- Firebase SDKs using compat versions -->
+  <!-- Firebase SDKs (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database-compat.js"></script>
   <script>
-    // Firebase configuration and initialization
     const firebaseConfig = {
       apiKey: "AIzaSyD9j0rXC-5rTjJOPgYYFDpi_nc9hevLDLg",
       authDomain: "sat-practice-de760.firebaseapp.com",
@@ -286,7 +247,7 @@
     const auth = firebase.auth();
     const db = firebase.database();
   </script>
-  <!-- External question and utility files -->
+  <!-- External Files -->
   <script src="math-questions.js"></script>
   <script src="verbal-questions.js"></script>
   <script src="writing-questions.js"></script>
@@ -295,57 +256,34 @@
   <script src="storage.js"></script>
 </head>
 <body>
-  <header class="container">
+  <!-- Navigation Bar -->
+  <header>
     <div class="logo">SAT Prep</div>
+    <nav>
+      <a href="#" id="navHome">Home</a>
+      <a href="#" id="navPractice">Practice</a>
+      <a href="#" id="navTests">Tests</a>
+      <a href="#" id="navSettings">Settings</a>
+    </nav>
     <div class="user-info">
       <span id="userName">Guest</span>
       <img id="userAvatar" src="https://via.placeholder.com/40" alt="User Avatar">
       <button id="signInBtn">Sign In with Google</button>
       <button id="signOutBtn" style="display:none;">Sign Out</button>
-      <button id="openSettings">Settings</button>
     </div>
   </header>
 
-  <main class="container" id="mainContent">
-    <section id="mainMenu">
-      <h1>Welcome! Good luck on test day!</h1>
-      <div class="card">
-        <div class="section-header">
-          <h2>Your Tests</h2>
-          <div class="tab-container">
-            <div class="tab active" id="activeTab">Active</div>
-            <div class="tab" id="pastTab">Past</div>
-          </div>
-        </div>
-        <p>You may have an upcoming test assigned to you.</p>
-      </div>
-      <!-- Container for displaying tests -->
-      <div id="testsList"></div>
-      <div class="card">
-        <div class="section-header">
-          <h2>Practice and Prepare</h2>
-          <div class="tab-container">
-            <div class="tab active">Active</div>
-            <div class="tab">Past</div>
-          </div>
-        </div>
-        <div class="practice-item">
-          <span class="icon">📐</span>
-          <button class="start-practice" data-type="Math">Math Practice</button>
-        </div>
-        <div class="practice-item">
-          <span class="icon">📚</span>
-          <button class="start-practice" data-type="Verbal">Verbal Practice</button>
-        </div>
-        <div class="practice-item">
-          <span class="icon">✍️</span>
-          <button class="start-practice" data-type="Writing">Writing Practice</button>
-        </div>
-      </div>
-    </section>
+  <!-- Pages -->
+  <section id="homePage" class="page active">
+    <div class="card">
+      <h1>Welcome to SAT Prep!</h1>
+      <p>Your journey to test success starts here. Use the navigation above to practice or check your tests.</p>
+    </div>
+  </section>
 
-    <section id="practiceView" class="card">
-      <button id="backButton">Back to Menu</button>
+  <section id="practicePage" class="page">
+    <div class="card" id="practiceView">
+      <button id="backToHomeFromPractice">← Back to Home</button>
       <h2 id="practiceTitle"></h2>
       <div class="progress-container">
         <span id="questionNumber"></span>
@@ -359,15 +297,39 @@
       <p id="feedbackLabel"></p>
       <button id="nextButton">Next Question</button>
       <button id="toggleCalculator">Toggle Calculator</button>
-    </section>
+    </div>
+  </section>
 
-    <!-- Admin Panel Section (Hidden by default) -->
-    <section id="adminArea" class="card">
+  <section id="testsPage" class="page">
+    <div class="card">
+      <h2>Your Tests</h2>
+      <div class="tab-container">
+        <div class="tab active" id="activeTab">Upcoming</div>
+        <div class="tab" id="pastTab">Past</div>
+      </div>
+      <div id="testsList"></div>
+    </div>
+    <!-- Optionally, the Admin Panel can be shown here if enabled -->
+    <div id="adminArea" class="card" style="display:none;">
       <h2>Admin Panel</h2>
       <button id="refreshAdminData">Refresh Data</button>
       <div id="adminContent"></div>
-    </section>
-  </main>
+    </div>
+  </section>
+
+  <!-- Settings Modal -->
+  <div id="settingsMenu">
+    <div id="settingsContent">
+      <h2>Settings</h2>
+      <button id="btnViewSession">View Saved Practice Session</button>
+      <button id="btnClearSession">Clear Saved Practice Session</button>
+      <button id="btnViewTests">View Completed Tests</button>
+      <button id="btnClearTests">Clear Completed Tests</button>
+      <button id="btnAdminLogin">Admin Login</button>
+      <button id="btnCloseSettings">Close</button>
+      <div id="settingsOutput"></div>
+    </div>
+  </div>
 
   <!-- Calculator -->
   <div id="dosCalculator">
@@ -399,24 +361,36 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
-  <div id="settingsMenu">
-    <div id="settingsContent">
-      <h2>Settings</h2>
-      <button id="btnViewSession">View Saved Practice Session</button>
-      <button id="btnClearSession">Clear Saved Practice Session</button>
-      <button id="btnViewTests">View Completed Tests</button>
-      <button id="btnClearTests">Clear Completed Tests</button>
-      <!-- New Admin Login Button -->
-      <button id="btnAdminLogin">Admin Login</button>
-      <button id="btnCloseSettings">Close</button>
-      <div id="settingsOutput"></div>
-    </div>
-  </div>
-
-  <!-- Main SAT Prep Logic and Admin Functionality -->
   <script>
-    // =============== AUTH SETUP ===============
+    /* Navigation Functions */
+    function navigateTo(pageId) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    document.getElementById('navHome').onclick = (e) => {
+      e.preventDefault();
+      navigateTo('homePage');
+    };
+    document.getElementById('navPractice').onclick = (e) => {
+      e.preventDefault();
+      navigateTo('practicePage');
+      // Start a new practice test if desired, or wait for user action.
+    };
+    document.getElementById('navTests').onclick = (e) => {
+      e.preventDefault();
+      navigateTo('testsPage');
+      setActiveTab(activeTab);
+      loadUpcomingTests();
+    };
+    document.getElementById('navSettings').onclick = (e) => {
+      e.preventDefault();
+      document.getElementById('settingsMenu').style.display = 'flex';
+    };
+
+    /* AUTH SETUP */
     const provider = new firebase.auth.GoogleAuthProvider();
     const signInBtn = document.getElementById('signInBtn');
     const signOutBtn = document.getElementById('signOutBtn');
@@ -436,7 +410,6 @@
         userAvatarEl.src = user.photoURL || 'https://via.placeholder.com/40';
         signInBtn.style.display = 'none';
         signOutBtn.style.display = 'inline-block';
-        // Save/update user's profile in the database
         db.ref('users/' + user.uid + '/profile').set({
           name: user.displayName,
           email: user.email
@@ -446,23 +419,11 @@
         userAvatarEl.src = 'https://via.placeholder.com/40';
         signInBtn.style.display = 'inline-block';
         signOutBtn.style.display = 'none';
-        // Hide admin panel when signing out
         document.getElementById('adminArea').style.display = 'none';
       }
     });
 
-    // ============== MAIN PRACTICE LOGIC ==============
-    const mainMenu = document.getElementById('mainMenu');
-    const practiceView = document.getElementById('practiceView');
-    const practiceTitle = document.getElementById('practiceTitle');
-    const questionLabel = document.getElementById('questionLabel');
-    const optionButtons = document.getElementById('optionButtons');
-    const feedbackLabel = document.getElementById('feedbackLabel');
-    const nextButton = document.getElementById('nextButton');
-    const progressBar = document.getElementById('progressBar');
-    const timeDisplay = document.getElementById('timeRemaining');
-    const toggleCalculatorBtn = document.getElementById('toggleCalculator');
-    const backButton = document.getElementById('backButton');
+    /* MAIN PRACTICE LOGIC */
     let currentPractice, currentQuestions, timerInterval;
     let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
     const totalQuestions = 5;
@@ -470,22 +431,23 @@
     document.querySelectorAll('.start-practice').forEach(btn => {
       btn.addEventListener('click', () => startPractice(btn.dataset.type));
     });
-    backButton.addEventListener('click', showMainMenu);
-    nextButton.addEventListener('click', showQuestion);
-    toggleCalculatorBtn.addEventListener('click', toggleCalculator);
+    document.getElementById('backToHomeFromPractice').onclick = () => {
+      navigateTo('homePage');
+    };
+    document.getElementById('nextButton').addEventListener('click', showQuestion);
+    document.getElementById('toggleCalculator').addEventListener('click', toggleCalculator);
 
     function startPractice(type) {
       currentPractice = type;
-      mainMenu.style.display = 'none';
-      practiceView.style.display = 'block';
-      practiceTitle.textContent = `${type} Practice`;
+      navigateTo('practicePage');
+      document.getElementById('practiceTitle').textContent = `${type} Practice`;
       currentQuestions = shuffleArray(getQuestionsByType(type)).slice(0, totalQuestions);
       currentQuestionIndex = correctAnswers = 0;
       timeRemaining = 600;
       updateProgressBar();
       startTimer();
       showQuestion();
-      toggleCalculatorBtn.style.display = type === 'Math' ? 'block' : 'none';
+      document.getElementById('toggleCalculator').style.display = type === 'Math' ? 'block' : 'none';
     }
 
     function getQuestionsByType(type) {
@@ -506,31 +468,31 @@
         return;
       }
       const question = currentQuestions[currentQuestionIndex];
-      questionLabel.textContent = question.text;
-      optionButtons.innerHTML = '';
-      feedbackLabel.textContent = '';
-      nextButton.style.display = 'none';
+      document.getElementById('questionLabel').textContent = question.text;
+      document.getElementById('optionButtons').innerHTML = '';
+      document.getElementById('feedbackLabel').textContent = '';
+      document.getElementById('nextButton').style.display = 'none';
 
-      // Remove any previous passage or question number elements
+      // Clear previous passage and number
       document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
 
       if (question.hasPassage) {
         const passageEl = document.createElement('div');
         passageEl.className = 'passage-container';
         passageEl.textContent = question.passage;
-        practiceView.insertBefore(passageEl, questionLabel);
+        document.getElementById('practiceView').insertBefore(passageEl, document.getElementById('questionLabel'));
       }
 
       const questionNumberEl = document.createElement('div');
       questionNumberEl.className = 'question-number';
       questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
-      practiceView.insertBefore(questionNumberEl, questionLabel);
+      document.getElementById('practiceView').insertBefore(questionNumberEl, document.getElementById('questionLabel'));
 
       question.options.forEach((opt, idx) => {
         const btn = document.createElement('button');
         btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
         btn.addEventListener('click', () => checkAnswer(opt));
-        optionButtons.appendChild(btn);
+        document.getElementById('optionButtons').appendChild(btn);
       });
       updateProgressBar();
     }
@@ -538,17 +500,17 @@
     function checkAnswer(answer) {
       const question = currentQuestions[currentQuestionIndex];
       const isCorrect = answer === question.correctAnswer;
-      feedbackLabel.textContent = isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${question.correctAnswer}`;
-      feedbackLabel.style.color = isCorrect ? '#4CAF50' : '#F44336';
+      document.getElementById('feedbackLabel').textContent = isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${question.correctAnswer}`;
+      document.getElementById('feedbackLabel').style.color = isCorrect ? '#4CAF50' : '#F44336';
       if (isCorrect) correctAnswers++;
       currentQuestionIndex++;
-      nextButton.style.display = 'block';
-      optionButtons.querySelectorAll('button').forEach(btn => btn.disabled = true);
+      document.getElementById('nextButton').style.display = 'block';
+      document.querySelectorAll('#optionButtons button').forEach(btn => btn.disabled = true);
       updateProgressBar();
     }
 
     function updateProgressBar() {
-      progressBar.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
+      document.getElementById('progressBar').style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
     }
 
     function startTimer() {
@@ -568,13 +530,12 @@
     function updateTimerDisplay() {
       const minutes = Math.floor(timeRemaining / 60);
       const seconds = timeRemaining % 60;
-      timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      document.getElementById('timeRemaining').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
     function finishPractice() {
       clearInterval(timerInterval);
       const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
-      // Collect the numeric IDs from the questions used in this test
       const questionIDs = currentQuestions.map(q => q.id);
       const user = auth.currentUser;
       if (user) {
@@ -584,28 +545,14 @@
           correctAnswers,
           totalQuestions,
           date: new Date().toISOString(),
-          questionIDs: questionIDs  // New: Array of question numeric IDs
+          questionIDs: questionIDs
         };
         window.satPracticeStorage.saveCompletedTest(testData);
         alert(`Practice complete! Your score: ${scorePercentage}%. Test saved to your account.`);
       } else {
         alert(`Practice complete! Your score: ${scorePercentage}%. (Sign in to save your results)`);
       }
-      showMainMenu();
-    }
-
-    function showMainMenu() {
-      mainMenu.style.display = 'block';
-      practiceView.style.display = 'none';
-      currentQuestionIndex = correctAnswers = 0;
-      timeRemaining = 600;
-      progressBar.style.width = '0%';
-      feedbackLabel.textContent = '';
-      timeDisplay.textContent = '10:00';
-      questionLabel.textContent = '';
-      optionButtons.innerHTML = '';
-      nextButton.style.display = 'none';
-      document.getElementById('dosCalculator').style.display = 'none';
+      navigateTo('homePage');
     }
 
     function toggleCalculator() {
@@ -613,7 +560,7 @@
       calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
     }
 
-    // ============== TEST TABS FUNCTIONALITY ==============
+    /* TEST TABS FUNCTIONALITY */
     const activeTab = document.getElementById('activeTab');
     const pastTab = document.getElementById('pastTab');
 
@@ -633,7 +580,6 @@
       tab.classList.add('active');
     }
 
-    // Load upcoming tests (assigned tests)
     function loadUpcomingTests() {
       const testsList = document.getElementById('testsList');
       testsList.innerHTML = "Loading upcoming tests...";
@@ -659,7 +605,6 @@
       }
     }
 
-    // Load past tests (completed tests)
     function loadPastTests() {
       const testsList = document.getElementById('testsList');
       testsList.innerHTML = "Loading past tests...";
@@ -681,13 +626,10 @@
       });
     }
 
-    // ============== SETTINGS MENU ==============
+    /* SETTINGS MODAL */
     const settingsMenu = document.getElementById('settingsMenu');
     const settingsOutput = document.getElementById('settingsOutput');
 
-    document.getElementById('openSettings').onclick = () => {
-      settingsMenu.style.display = 'flex';
-    };
     document.getElementById('btnCloseSettings').onclick = () => {
       settingsMenu.style.display = 'none';
     };
@@ -725,14 +667,14 @@
         });
     };
 
-    // ============== ADMIN FUNCTIONALITY ==============
+    /* ADMIN FUNCTIONALITY */
     document.getElementById('btnAdminLogin').onclick = () => {
       if (!auth.currentUser) {
         alert("You must be signed in to become an admin.");
         return;
       }
       const code = prompt("Enter the 4-digit admin code:");
-      if (code === "1234") {  // Change this code as needed.
+      if (code === "1234") {
         window.isAdmin = true;
         alert("Admin privileges granted.");
         document.getElementById('adminArea').style.display = 'block';
@@ -751,7 +693,6 @@
           let html = '';
           if (data) {
             for (const uid in data) {
-              // Get the profile data if available
               const profile = data[uid].profile;
               const name = (profile && profile.name) ? profile.name : 'Unknown';
               html += `<div>`;
@@ -779,10 +720,9 @@
         });
     }
 
-    // On initial load, show upcoming tests by default
+    /* On Load: Show Home Page */
     window.addEventListener('load', () => {
-      setActiveTab(activeTab);
-      loadUpcomingTests();
+      navigateTo('homePage');
     });
   </script>
 </body>

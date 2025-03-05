@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SAT Prep</title>
+  <title>SAT Prep - Modern Overhaul</title>
   <style>
-    /* Base Reset and Fonts */
+    /* =========================================================================
+       Global Resets and Base Styles
+    ========================================================================= */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -13,9 +15,11 @@
       line-height: 1.6;
       overflow-x: hidden;
     }
-    a { text-decoration: none; }
-
-    /* Navigation Bar */
+    a { text-decoration: none; color: inherit; }
+    
+    /* =========================================================================
+       Navigation Bar & Header
+    ========================================================================= */
     header {
       background: #fff;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -26,7 +30,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      transition: background 0.3s ease;
     }
+    header:hover { background: #f9fafb; }
     .logo {
       font-size: 1.8rem;
       font-weight: bold;
@@ -40,11 +46,12 @@
       font-size: 1rem;
       padding: 5px 10px;
       color: #333;
-      transition: color 0.3s;
+      border-radius: 4px;
+      transition: background 0.3s ease, color 0.3s ease;
     }
-    nav a:hover { color: #4a6ee0; }
-
-    /* User Info */
+    nav a:hover { background: #4a6ee0; color: #fff; }
+    
+    /* User Info in Header */
     .user-info {
       display: flex;
       align-items: center;
@@ -63,15 +70,17 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 0.9rem;
-      transition: background 0.3s;
+      transition: background 0.3s ease;
     }
     .user-info button:hover { background: #3558b2; }
-
-    /* Page Sections */
+    
+    /* =========================================================================
+       Page Container and Transition Animations
+    ========================================================================= */
     .page {
       display: none;
       opacity: 0;
-      transform: translateX(20px);
+      transform: translateY(20px);
       transition: opacity 0.5s ease, transform 0.5s ease;
       padding: 20px;
       min-height: calc(100vh - 70px);
@@ -79,19 +88,28 @@
     .page.active {
       display: block;
       opacity: 1;
-      transform: translateX(0);
+      transform: translateY(0);
     }
-
-    /* Cards */
+    
+    /* =========================================================================
+       Card Components
+    ========================================================================= */
     .card {
       background: #fff;
       border-radius: 8px;
       padding: 20px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       margin-bottom: 20px;
+      animation: fadeInUp 0.6s ease;
     }
-
-    /* Buttons (General) */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* =========================================================================
+       General Button Styles
+    ========================================================================= */
     button {
       background: #4a6ee0;
       color: #fff;
@@ -103,16 +121,16 @@
       transition: background 0.3s ease;
     }
     button:hover { background: #3558b2; }
-
-    /* Practice Test Styles */
-    #practiceView button {
-      margin-top: 10px;
-    }
+    
+    /* =========================================================================
+       Practice Test Styles
+    ========================================================================= */
+    #practiceView button { margin-top: 10px; }
     .progress-container {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin: 10px 0;
+      margin: 15px 0;
     }
     .progress-bar {
       flex-grow: 1;
@@ -140,8 +158,6 @@
       margin-bottom: 10px;
       font-size: 1.1rem;
     }
-
-    /* Options Buttons */
     #optionButtons button {
       background: #fff;
       color: #333;
@@ -153,8 +169,10 @@
       transition: background 0.3s ease;
     }
     #optionButtons button:hover { background: #f0f4f8; }
-
-    /* Tabs on Tests Page */
+    
+    /* =========================================================================
+       Tests Page Tabs
+    ========================================================================= */
     .tab-container {
       display: flex;
       gap: 10px;
@@ -176,8 +194,42 @@
     #testsList ul { list-style: none; padding-left: 0; }
     #testsList li { padding: 10px; border-bottom: 1px solid #eee; }
     #testsList li small { color: #777; }
-
-    /* Settings Modal */
+    
+    /* =========================================================================
+       Create Test Page (For Admin)
+    ========================================================================= */
+    #createTestPage {
+      display: none;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      padding: 20px;
+      min-height: calc(100vh - 70px);
+    }
+    #createTestPage.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #testForm label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #testForm input, #testForm textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #testForm button {
+      margin-top: 15px;
+    }
+    
+    /* =========================================================================
+       Settings Modal Styles
+    ========================================================================= */
     #settingsMenu {
       position: fixed;
       top: 0;
@@ -206,8 +258,10 @@
       border-radius: 4px;
       font-size: 0.9rem;
     }
-
-    /* Calculator (Floating) */
+    
+    /* =========================================================================
+       Calculator Styles (Floating)
+    ========================================================================= */
     #dosCalculator {
       position: fixed;
       top: 70px;
@@ -230,8 +284,24 @@
       border-radius: 4px;
       font-size: 1.2rem;
     }
+    
+    /* =========================================================================
+       Additional Animations & Utilities
+    ========================================================================= */
+    .fade-in { animation: fadeIn 0.5s ease forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .slide-up { animation: slideUp 0.5s ease forwards; }
+    @keyframes slideUp {
+      from { transform: translateY(20px); }
+      to { transform: translateY(0); }
+    }
   </style>
-  <!-- Firebase SDKs (compat) -->
+  <!-- =========================================================================
+       Firebase SDKs (Compat)
+  ========================================================================= -->
   <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database-compat.js"></script>
@@ -247,7 +317,9 @@
     const auth = firebase.auth();
     const db = firebase.database();
   </script>
-  <!-- External Files -->
+  <!-- =========================================================================
+       External Files (Assumed to be available)
+  ========================================================================= -->
   <script src="math-questions.js"></script>
   <script src="verbal-questions.js"></script>
   <script src="writing-questions.js"></script>
@@ -263,6 +335,7 @@
       <a href="#" id="navHome">Home</a>
       <a href="#" id="navPractice">Practice</a>
       <a href="#" id="navTests">Tests</a>
+      <a href="#" id="navCreate">Create Test</a>
       <a href="#" id="navSettings">Settings</a>
     </nav>
     <div class="user-info">
@@ -273,11 +346,13 @@
     </div>
   </header>
 
-  <!-- Pages -->
+  <!-- =========================================================================
+       Page Sections
+  ========================================================================= -->
   <section id="homePage" class="page active">
-    <div class="card">
+    <div class="card fade-in">
       <h1>Welcome to SAT Prep!</h1>
-      <p>Your journey to test success starts here. Use the navigation above to practice or check your tests.</p>
+      <p>Begin your journey to test success. Use the navigation above to practice, check your tests, or create a custom test if you're an admin.</p>
     </div>
   </section>
 
@@ -309,11 +384,28 @@
       </div>
       <div id="testsList"></div>
     </div>
-    <!-- Optionally, the Admin Panel can be shown here if enabled -->
+    <!-- Admin Panel (Optional) -->
     <div id="adminArea" class="card" style="display:none;">
       <h2>Admin Panel</h2>
       <button id="refreshAdminData">Refresh Data</button>
       <div id="adminContent"></div>
+    </div>
+  </section>
+
+  <section id="createTestPage" class="page">
+    <div class="card">
+      <button id="backToHomeFromCreate">← Back to Home</button>
+      <h2>Create Custom Test</h2>
+      <form id="testForm">
+        <label for="testType">Test Type</label>
+        <input type="text" id="testType" placeholder="Math, Verbal, Writing" required>
+        <label for="testDate">Scheduled Date/Time</label>
+        <input type="datetime-local" id="testDate" required>
+        <label for="questionIDs">Question IDs (comma separated)</label>
+        <textarea id="questionIDs" rows="3" placeholder="e.g., 101,102,103" required></textarea>
+        <button type="submit">Create Test</button>
+      </form>
+      <div id="createTestOutput"></div>
     </div>
   </section>
 
@@ -361,24 +453,21 @@
     </div>
   </div>
 
+  <!-- =========================================================================
+       JavaScript Section
+       (Includes Navigation, Auth, Practice Test Logic, Tests Tabs, Admin Test Creation, and Settings)
+  ========================================================================= -->
   <script>
-    /* Navigation Functions */
+    /* ----------------------------
+       Navigation Functions & Page Switching
+    ----------------------------- */
     function navigateTo(pageId) {
-      document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-      });
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
     }
-
-    document.getElementById('navHome').onclick = (e) => {
-      e.preventDefault();
-      navigateTo('homePage');
-    };
-    document.getElementById('navPractice').onclick = (e) => {
-      e.preventDefault();
-      navigateTo('practicePage');
-      // Start a new practice test if desired, or wait for user action.
-    };
+    
+    document.getElementById('navHome').onclick = (e) => { e.preventDefault(); navigateTo('homePage'); };
+    document.getElementById('navPractice').onclick = (e) => { e.preventDefault(); navigateTo('practicePage'); };
     document.getElementById('navTests').onclick = (e) => {
       e.preventDefault();
       navigateTo('testsPage');
@@ -389,21 +478,28 @@
       e.preventDefault();
       document.getElementById('settingsMenu').style.display = 'flex';
     };
-
-    /* AUTH SETUP */
+    document.getElementById('navCreate').onclick = (e) => {
+      e.preventDefault();
+      // Only allow if admin
+      if (window.isAdmin) {
+        navigateTo('createTestPage');
+      } else {
+        alert("Admin privileges required to create tests.");
+      }
+    };
+    
+    /* ----------------------------
+       Firebase Auth Setup
+    ----------------------------- */
     const provider = new firebase.auth.GoogleAuthProvider();
     const signInBtn = document.getElementById('signInBtn');
     const signOutBtn = document.getElementById('signOutBtn');
     const userNameEl = document.getElementById('userName');
     const userAvatarEl = document.getElementById('userAvatar');
-
-    signInBtn.onclick = () => {
-      auth.signInWithPopup(provider).catch(err => console.error('SignIn failed:', err));
-    };
-    signOutBtn.onclick = () => {
-      auth.signOut().catch(err => console.error('SignOut failed:', err));
-    };
-
+    
+    signInBtn.onclick = () => { auth.signInWithPopup(provider).catch(err => console.error('SignIn failed:', err)); };
+    signOutBtn.onclick = () => { auth.signOut().catch(err => console.error('SignOut failed:', err)); };
+    
     auth.onAuthStateChanged(user => {
       if (user) {
         userNameEl.textContent = user.displayName || 'User';
@@ -422,21 +518,21 @@
         document.getElementById('adminArea').style.display = 'none';
       }
     });
-
-    /* MAIN PRACTICE LOGIC */
+    
+    /* ----------------------------
+       MAIN PRACTICE TEST LOGIC
+    ----------------------------- */
     let currentPractice, currentQuestions, timerInterval;
     let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
     const totalQuestions = 5;
-
+    
     document.querySelectorAll('.start-practice').forEach(btn => {
       btn.addEventListener('click', () => startPractice(btn.dataset.type));
     });
-    document.getElementById('backToHomeFromPractice').onclick = () => {
-      navigateTo('homePage');
-    };
+    document.getElementById('backToHomeFromPractice').onclick = () => { navigateTo('homePage'); };
     document.getElementById('nextButton').addEventListener('click', showQuestion);
     document.getElementById('toggleCalculator').addEventListener('click', toggleCalculator);
-
+    
     function startPractice(type) {
       currentPractice = type;
       navigateTo('practicePage');
@@ -447,47 +543,37 @@
       updateProgressBar();
       startTimer();
       showQuestion();
-      document.getElementById('toggleCalculator').style.display = type === 'Math' ? 'block' : 'none';
+      document.getElementById('toggleCalculator').style.display = (type === 'Math') ? 'block' : 'none';
     }
-
+    
     function getQuestionsByType(type) {
-      return {
-        Math: mathQuestions,
-        Verbal: verbalQuestions,
-        Writing: writingQuestions
-      }[type] || [];
+      return { Math: mathQuestions, Verbal: verbalQuestions, Writing: writingQuestions }[type] || [];
     }
-
-    function shuffleArray(array) {
-      return array.sort(() => Math.random() - 0.5);
-    }
-
+    
+    function shuffleArray(array) { return array.sort(() => Math.random() - 0.5); }
+    
     function showQuestion() {
-      if (currentQuestionIndex >= totalQuestions) {
-        finishPractice();
-        return;
-      }
+      if (currentQuestionIndex >= totalQuestions) { finishPractice(); return; }
       const question = currentQuestions[currentQuestionIndex];
       document.getElementById('questionLabel').textContent = question.text;
       document.getElementById('optionButtons').innerHTML = '';
       document.getElementById('feedbackLabel').textContent = '';
       document.getElementById('nextButton').style.display = 'none';
-
-      // Clear previous passage and number
+    
+      // Clear previous passage and question number elements
       document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
-
+    
       if (question.hasPassage) {
         const passageEl = document.createElement('div');
         passageEl.className = 'passage-container';
         passageEl.textContent = question.passage;
         document.getElementById('practiceView').insertBefore(passageEl, document.getElementById('questionLabel'));
       }
-
       const questionNumberEl = document.createElement('div');
       questionNumberEl.className = 'question-number';
       questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
       document.getElementById('practiceView').insertBefore(questionNumberEl, document.getElementById('questionLabel'));
-
+    
       question.options.forEach((opt, idx) => {
         const btn = document.createElement('button');
         btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
@@ -496,7 +582,7 @@
       });
       updateProgressBar();
     }
-
+    
     function checkAnswer(answer) {
       const question = currentQuestions[currentQuestionIndex];
       const isCorrect = answer === question.correctAnswer;
@@ -508,31 +594,26 @@
       document.querySelectorAll('#optionButtons button').forEach(btn => btn.disabled = true);
       updateProgressBar();
     }
-
+    
     function updateProgressBar() {
       document.getElementById('progressBar').style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
     }
-
+    
     function startTimer() {
       clearInterval(timerInterval);
       updateTimerDisplay();
       timerInterval = setInterval(() => {
-        if (timeRemaining > 0) {
-          timeRemaining--;
-          updateTimerDisplay();
-        } else {
-          clearInterval(timerInterval);
-          finishPractice();
-        }
+        if (timeRemaining > 0) { timeRemaining--; updateTimerDisplay(); }
+        else { clearInterval(timerInterval); finishPractice(); }
       }, 1000);
     }
-
+    
     function updateTimerDisplay() {
       const minutes = Math.floor(timeRemaining / 60);
       const seconds = timeRemaining % 60;
       document.getElementById('timeRemaining').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
-
+    
     function finishPractice() {
       clearInterval(timerInterval);
       const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
@@ -554,32 +635,27 @@
       }
       navigateTo('homePage');
     }
-
+    
     function toggleCalculator() {
       const calculator = document.getElementById('dosCalculator');
-      calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
+      calculator.style.display = (calculator.style.display === 'none' ? 'block' : 'none');
     }
-
-    /* TEST TABS FUNCTIONALITY */
+    
+    /* ----------------------------
+       TESTS PAGE & TABS FUNCTIONALITY
+    ----------------------------- */
     const activeTab = document.getElementById('activeTab');
     const pastTab = document.getElementById('pastTab');
-
-    activeTab.onclick = () => {
-      setActiveTab(activeTab);
-      loadUpcomingTests();
-    };
-
-    pastTab.onclick = () => {
-      setActiveTab(pastTab);
-      loadPastTests();
-    };
-
+    
+    activeTab.onclick = () => { setActiveTab(activeTab); loadUpcomingTests(); };
+    pastTab.onclick = () => { setActiveTab(pastTab); loadPastTests(); };
+    
     function setActiveTab(tab) {
       activeTab.classList.remove('active');
       pastTab.classList.remove('active');
       tab.classList.add('active');
     }
-
+    
     function loadUpcomingTests() {
       const testsList = document.getElementById('testsList');
       testsList.innerHTML = "Loading upcoming tests...";
@@ -604,7 +680,7 @@
         testsList.innerHTML = "Upcoming tests functionality is not available.";
       }
     }
-
+    
     function loadPastTests() {
       const testsList = document.getElementById('testsList');
       testsList.innerHTML = "Loading past tests...";
@@ -625,15 +701,59 @@
         }
       });
     }
-
-    /* SETTINGS MODAL */
+    
+    /* ----------------------------
+       ADMIN TEST CREATION PAGE
+    ----------------------------- */
+    document.getElementById('navCreate').onclick = (e) => {
+      e.preventDefault();
+      if (window.isAdmin) { navigateTo('createTestPage'); }
+      else { alert("Admin privileges required to create tests."); }
+    };
+    
+    document.getElementById('backToHomeFromCreate').onclick = () => { navigateTo('homePage'); };
+    
+    document.getElementById('testForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Gather test creation data from form inputs
+      const type = document.getElementById('testType').value;
+      const date = document.getElementById('testDate').value;
+      const questionIDsStr = document.getElementById('questionIDs').value;
+      const questionIDs = questionIDsStr.split(',').map(id => id.trim());
+      if (!type || !date || questionIDs.length === 0) {
+        document.getElementById('createTestOutput').innerText = "Please complete all fields.";
+        return;
+      }
+      // Save the test under assignedTests for the current user
+      const user = auth.currentUser;
+      if (!user) {
+        alert("You must be signed in to create a test.");
+        return;
+      }
+      const testData = {
+        type: type,
+        date: date,
+        questionIDs: questionIDs
+      };
+      db.ref(`assignedTests/${user.uid}`).push(testData)
+        .then(() => {
+          document.getElementById('createTestOutput').innerText = "Test created successfully.";
+          // Clear form inputs
+          document.getElementById('testForm').reset();
+        })
+        .catch(err => {
+          document.getElementById('createTestOutput').innerText = "Error creating test: " + err.message;
+        });
+    });
+    
+    /* ----------------------------
+       SETTINGS MODAL
+    ----------------------------- */
     const settingsMenu = document.getElementById('settingsMenu');
     const settingsOutput = document.getElementById('settingsOutput');
-
-    document.getElementById('btnCloseSettings').onclick = () => {
-      settingsMenu.style.display = 'none';
-    };
-
+    
+    document.getElementById('btnCloseSettings').onclick = () => { settingsMenu.style.display = 'none'; };
+    
     document.getElementById('btnViewSession').onclick = () => {
       window.satPracticeStorage.loadPracticeSession(session => {
         settingsOutput.innerText = session
@@ -641,12 +761,12 @@
           : 'No saved practice session found.';
       });
     };
-
+    
     document.getElementById('btnClearSession').onclick = () => {
       window.satPracticeStorage.clearPracticeSession();
       settingsOutput.innerText = 'Practice session cleared.';
     };
-
+    
     document.getElementById('btnViewTests').onclick = () => {
       window.satPracticeStorage.getCompletedTests(tests => {
         settingsOutput.innerText = tests.length
@@ -654,25 +774,19 @@
           : 'No completed tests found.';
       });
     };
-
+    
     document.getElementById('btnClearTests').onclick = () => {
       const user = auth.currentUser;
-      if (!user) {
-        settingsOutput.innerText = 'Not signed in. No tests to clear.';
-        return;
-      }
+      if (!user) { settingsOutput.innerText = 'Not signed in. No tests to clear.'; return; }
       firebase.database().ref(`users/${user.uid}/completedTests`).remove()
-        .then(() => {
-          settingsOutput.innerText = 'Completed tests cleared.';
-        });
+        .then(() => { settingsOutput.innerText = 'Completed tests cleared.'; });
     };
-
-    /* ADMIN FUNCTIONALITY */
+    
+    /* ----------------------------
+       ADMIN FUNCTIONALITY
+    ----------------------------- */
     document.getElementById('btnAdminLogin').onclick = () => {
-      if (!auth.currentUser) {
-        alert("You must be signed in to become an admin.");
-        return;
-      }
+      if (!auth.currentUser) { alert("You must be signed in to become an admin."); return; }
       const code = prompt("Enter the 4-digit admin code:");
       if (code === "1234") {
         window.isAdmin = true;
@@ -683,9 +797,9 @@
         alert("Incorrect code.");
       }
     };
-
+    
     document.getElementById('refreshAdminData').onclick = fetchAdminData;
-
+    
     function fetchAdminData() {
       firebase.database().ref('users').once('value')
         .then(snapshot => {
@@ -695,8 +809,7 @@
             for (const uid in data) {
               const profile = data[uid].profile;
               const name = (profile && profile.name) ? profile.name : 'Unknown';
-              html += `<div>`;
-              html += `<strong>User:</strong> ${name} (${uid})<br>`;
+              html += `<div><strong>User:</strong> ${name} (${uid})<br>`;
               if (data[uid].completedTests) {
                 html += `<ul>`;
                 for (const testKey in data[uid].completedTests) {
@@ -705,25 +818,19 @@
                            <small>Questions: ${test.questionIDs.join(', ')}</small></li>`;
                 }
                 html += `</ul>`;
-              } else {
-                html += `<p>No completed tests.</p>`;
-              }
+              } else { html += `<p>No completed tests.</p>`; }
               html += `</div>`;
             }
-          } else {
-            html = '<p>No user data found.</p>';
-          }
+          } else { html = '<p>No user data found.</p>'; }
           document.getElementById('adminContent').innerHTML = html;
         })
-        .catch(err => {
-          console.error("Error fetching admin data:", err);
-        });
+        .catch(err => { console.error("Error fetching admin data:", err); });
     }
-
-    /* On Load: Show Home Page */
-    window.addEventListener('load', () => {
-      navigateTo('homePage');
-    });
+    
+    /* ----------------------------
+       On Load: Default to Home Page
+    ----------------------------- */
+    window.addEventListener('load', () => { navigateTo('homePage'); });
   </script>
 </body>
 </html>

@@ -54,7 +54,7 @@
       .then(snapshot => {
         const data = snapshot.val();
         if (data) {
-          // Convert object to array and ensure each test has a questionIDs property.
+          // Ensure each test has a questionIDs property
           const tests = Object.values(data).map(test => {
             if (!test.questionIDs) {
               test.questionIDs = [];
@@ -68,12 +68,32 @@
       });
   }
 
+  // Get assigned (upcoming) tests from DB
+  // This assumes tests assigned to the user are stored under assignedTests/<uid>
+  function getAssignedTests(callback) {
+    const user = auth.currentUser;
+    if (!user) {
+      callback([]);
+      return;
+    }
+    db.ref(`assignedTests/${user.uid}`).once('value')
+      .then(snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          callback(Object.values(data));
+        } else {
+          callback([]);
+        }
+      });
+  }
+
   // Expose these functions globally as satPracticeStorage
   window.satPracticeStorage = {
     savePracticeSession,
     loadPracticeSession,
     clearPracticeSession,
     saveCompletedTest,
-    getCompletedTests
+    getCompletedTests,
+    getAssignedTests
   };
 })();

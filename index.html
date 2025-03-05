@@ -286,7 +286,7 @@
     const auth = firebase.auth();
     const db = firebase.database();
   </script>
-  <!-- (Assumed external files: math-questions.js, verbal-questions.js, writing-questions.js, popup.js, dos-calculator.js, storage.js) -->
+  <!-- External question and utility files -->
   <script src="math-questions.js"></script>
   <script src="verbal-questions.js"></script>
   <script src="writing-questions.js"></script>
@@ -313,12 +313,14 @@
         <div class="section-header">
           <h2>Your Tests</h2>
           <div class="tab-container">
-            <div class="tab active">Active</div>
-            <div class="tab">Past</div>
+            <div class="tab active" id="activeTab">Active</div>
+            <div class="tab" id="pastTab">Past</div>
           </div>
         </div>
-        <p>You may have an upcoming test.</p>
+        <p>You may have an upcoming test assigned to you.</p>
       </div>
+      <!-- Container for displaying tests -->
+      <div id="testsList"></div>
       <div class="card">
         <div class="section-header">
           <h2>Practice and Prepare</h2>
@@ -611,6 +613,74 @@
       calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
     }
 
+    // ============== TEST TABS FUNCTIONALITY ==============
+    const activeTab = document.getElementById('activeTab');
+    const pastTab = document.getElementById('pastTab');
+
+    activeTab.onclick = () => {
+      setActiveTab(activeTab);
+      loadUpcomingTests();
+    };
+
+    pastTab.onclick = () => {
+      setActiveTab(pastTab);
+      loadPastTests();
+    };
+
+    function setActiveTab(tab) {
+      activeTab.classList.remove('active');
+      pastTab.classList.remove('active');
+      tab.classList.add('active');
+    }
+
+    // Load upcoming tests (assigned tests)
+    function loadUpcomingTests() {
+      const testsList = document.getElementById('testsList');
+      testsList.innerHTML = "Loading upcoming tests...";
+      if (window.satPracticeStorage.getAssignedTests) {
+        window.satPracticeStorage.getAssignedTests(tests => {
+          if (tests.length > 0) {
+            let html = "<h3>Upcoming Tests</h3><ul>";
+            tests.forEach(test => {
+              html += `<li>${test.type} Test scheduled for ${new Date(test.date).toLocaleString()}`;
+              if (test.questionIDs) {
+                html += `<br><small>Questions: ${test.questionIDs.join(', ')}</small>`;
+              }
+              html += "</li>";
+            });
+            html += "</ul>";
+            testsList.innerHTML = html;
+          } else {
+            testsList.innerHTML = "No upcoming tests found.";
+          }
+        });
+      } else {
+        testsList.innerHTML = "Upcoming tests functionality is not available.";
+      }
+    }
+
+    // Load past tests (completed tests)
+    function loadPastTests() {
+      const testsList = document.getElementById('testsList');
+      testsList.innerHTML = "Loading past tests...";
+      window.satPracticeStorage.getCompletedTests(tests => {
+        if (tests.length > 0) {
+          let html = "<h3>Past Tests</h3><ul>";
+          tests.forEach(test => {
+            html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%`;
+            if (test.questionIDs) {
+              html += `<br><small>Questions: ${test.questionIDs.join(', ')}</small>`;
+            }
+            html += "</li>";
+          });
+          html += "</ul>";
+          testsList.innerHTML = html;
+        } else {
+          testsList.innerHTML = "No past tests found.";
+        }
+      });
+    }
+
     // ============== SETTINGS MENU ==============
     const settingsMenu = document.getElementById('settingsMenu');
     const settingsOutput = document.getElementById('settingsOutput');
@@ -708,6 +778,12 @@
           console.error("Error fetching admin data:", err);
         });
     }
+
+    // On initial load, show upcoming tests by default
+    window.addEventListener('load', () => {
+      setActiveTab(activeTab);
+      loadUpcomingTests();
+    });
   </script>
 </body>
 </html>

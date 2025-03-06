@@ -113,161 +113,6 @@
       background-color: var(--secondary-color);
       border-radius: 25px;
     }
-    #practiceView { display: none; }
-    #questionLabel {
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-    }
-    #optionButtons button {
-      background-color: white;
-      color: var(--text-color);
-      border: 1px solid #e0e0e0;
-      margin: 0.5rem 0;
-      text-align: left;
-      width: 100%;
-      transition: background-color 0.3s ease;
-    }
-    #optionButtons button:hover {
-      background-color: var(--secondary-color);
-    }
-    #feedbackLabel {
-      margin-top: 1rem;
-      font-weight: bold;
-      text-align: center;
-    }
-    .progress-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .progress-bar {
-      flex-grow: 1;
-      height: 8px;
-      background-color: #e0e0e0;
-      border-radius: 4px;
-      margin: 0 1rem;
-      overflow: hidden;
-      min-width: 100px;
-    }
-    .progress {
-      height: 100%;
-      background-color: var(--primary-color);
-      width: 0%;
-      transition: width 0.5s ease;
-    }
-    .passage-container {
-      background-color: #f8f9fa;
-      border: 1px solid #e9ecef;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-    .question-number {
-      font-weight: bold;
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
-    }
-    /* Calculator */
-    #dosCalculator {
-      position: fixed;
-      top: 50px;
-      right: 20px;
-      background-color: #f8f9fa;
-      color: #333;
-      padding: 20px;
-      border: 2px solid #4a6ee0;
-      border-radius: 12px;
-      font-family: 'Courier New', monospace;
-      display: none;
-      z-index: 1000;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-    #calculatorDisplay {
-      background-color: #222;
-      padding: 15px;
-      margin-bottom: 20px;
-      text-align: right;
-      color: #0f0;
-      font-size: 1.5rem;
-      border-radius: 8px;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-      height: 50px;
-      display: flex;
-      align-items: center;
-    }
-    #dosCalculator button {
-      width: 60px;
-      height: 60px;
-      margin: 5px;
-      background-color: #4a6ee0;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.1s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    #dosCalculator button:hover {
-      background-color: #3558b2;
-      transform: scale(1.05);
-    }
-    #dosCalculator button:active {
-      transform: scale(0.95);
-    }
-    /* Settings Menu Modal */
-    #settingsMenu {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-    #settingsContent {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-    #settingsContent h2 {
-      margin-bottom: 1rem;
-    }
-    #settingsContent button {
-      margin: 5px 0;
-      width: 100%;
-    }
-    #settingsOutput {
-      margin-top: 10px;
-      background: #f0f4f8;
-      padding: 10px;
-      border-radius: 4px;
-      min-height: 50px;
-      white-space: pre-wrap;
-      font-size: 0.9rem;
-    }
-    /* Admin Panel */
-    #adminArea {
-      display: none;
-      margin-top: 20px;
-    }
-    #adminArea h2 {
-      margin-bottom: 1rem;
-    }
-    #adminContent div {
-      border-bottom: 1px solid #ccc;
-      padding: 10px 0;
-    }
   </style>
   <!-- Firebase SDKs using compat versions -->
   <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
@@ -286,12 +131,8 @@
     const auth = firebase.auth();
     const db = firebase.database();
   </script>
-  <!-- External question and utility files -->
-  <script src="math-questions.js"></script>
-  <script src="verbal-questions.js"></script>
-  <script src="writing-questions.js"></script>
+  <!-- Utility scripts -->
   <script src="popup.js"></script>
-  <script src="dos-calculator.js"></script>
   <script src="storage.js"></script>
 </head>
 <body>
@@ -329,75 +170,29 @@
             <div class="tab">Past</div>
           </div>
         </div>
+        <!-- The practice buttons now simply redirect to test.html, passing the practice type -->
         <div class="practice-item">
           <span class="icon">📐</span>
-          <button class="start-practice" data-type="Math">Math Practice</button>
+          <button onclick="window.location.href='test.html?type=Math'">Math Practice</button>
         </div>
         <div class="practice-item">
           <span class="icon">📚</span>
-          <button class="start-practice" data-type="Verbal">Verbal Practice</button>
+          <button onclick="window.location.href='test.html?type=Verbal'">Verbal Practice</button>
         </div>
         <div class="practice-item">
           <span class="icon">✍️</span>
-          <button class="start-practice" data-type="Writing">Writing Practice</button>
+          <button onclick="window.location.href='test.html?type=Writing'">Writing Practice</button>
         </div>
       </div>
     </section>
 
-    <section id="practiceView" class="card">
-      <button id="backButton">Back to Menu</button>
-      <h2 id="practiceTitle"></h2>
-      <div class="progress-container">
-        <span id="questionNumber"></span>
-        <div class="progress-bar">
-          <div id="progressBar" class="progress"></div>
-        </div>
-        <span id="timeRemaining">10:00</span>
-      </div>
-      <p id="questionLabel"></p>
-      <div id="optionButtons"></div>
-      <p id="feedbackLabel"></p>
-      <button id="nextButton">Next Question</button>
-      <button id="toggleCalculator">Toggle Calculator</button>
-    </section>
-
-    <!-- Admin Panel Section (Hidden by default) -->
+    <!-- Admin Panel (unchanged) -->
     <section id="adminArea" class="card">
       <h2>Admin Panel</h2>
       <button id="refreshAdminData">Refresh Data</button>
       <div id="adminContent"></div>
     </section>
   </main>
-
-  <!-- Calculator -->
-  <div id="dosCalculator">
-    <div id="calculatorDisplay">0</div>
-    <div>
-      <button data-action="clear">C</button>
-      <button data-digit="7">7</button>
-      <button data-digit="8">8</button>
-      <button data-digit="9">9</button>
-      <button data-operator="/">/</button>
-    </div>
-    <div>
-      <button data-digit="4">4</button>
-      <button data-digit="5">5</button>
-      <button data-digit="6">6</button>
-      <button data-operator="*">X</button>
-    </div>
-    <div>
-      <button data-digit="1">1</button>
-      <button data-digit="2">2</button>
-      <button data-digit="3">3</button>
-      <button data-operator="-">-</button>
-    </div>
-    <div>
-      <button data-digit="0">0</button>
-      <button data-action="decimal">.</button>
-      <button data-operator="=">=</button>
-      <button data-operator="+">+</button>
-    </div>
-  </div>
 
   <!-- Settings Modal -->
   <div id="settingsMenu">
@@ -414,9 +209,8 @@
     </div>
   </div>
 
-  <!-- Main SAT Prep Logic and Admin Functionality -->
   <script>
-    // =============== AUTH SETUP ===============
+    // ----- AUTHENTICATION SETUP -----
     const provider = new firebase.auth.GoogleAuthProvider();
     const signInBtn = document.getElementById('signInBtn');
     const signOutBtn = document.getElementById('signOutBtn');
@@ -436,7 +230,7 @@
         userAvatarEl.src = user.photoURL || 'https://via.placeholder.com/40';
         signInBtn.style.display = 'none';
         signOutBtn.style.display = 'inline-block';
-        // Save/update user's profile in the database
+        // Save/update user profile in the database
         db.ref('users/' + user.uid + '/profile').set({
           name: user.displayName,
           email: user.email
@@ -446,174 +240,12 @@
         userAvatarEl.src = 'https://via.placeholder.com/40';
         signInBtn.style.display = 'inline-block';
         signOutBtn.style.display = 'none';
-        // Hide admin panel when signing out
+        // Hide admin panel when signed out
         document.getElementById('adminArea').style.display = 'none';
       }
     });
 
-    // ============== MAIN PRACTICE LOGIC ==============
-    const mainMenu = document.getElementById('mainMenu');
-    const practiceView = document.getElementById('practiceView');
-    const practiceTitle = document.getElementById('practiceTitle');
-    const questionLabel = document.getElementById('questionLabel');
-    const optionButtons = document.getElementById('optionButtons');
-    const feedbackLabel = document.getElementById('feedbackLabel');
-    const nextButton = document.getElementById('nextButton');
-    const progressBar = document.getElementById('progressBar');
-    const timeDisplay = document.getElementById('timeRemaining');
-    const toggleCalculatorBtn = document.getElementById('toggleCalculator');
-    const backButton = document.getElementById('backButton');
-    let currentPractice, currentQuestions, timerInterval;
-    let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
-    const totalQuestions = 5;
-
-    document.querySelectorAll('.start-practice').forEach(btn => {
-      btn.addEventListener('click', () => startPractice(btn.dataset.type));
-    });
-    backButton.addEventListener('click', showMainMenu);
-    nextButton.addEventListener('click', showQuestion);
-    toggleCalculatorBtn.addEventListener('click', toggleCalculator);
-
-    function startPractice(type) {
-      currentPractice = type;
-      mainMenu.style.display = 'none';
-      practiceView.style.display = 'block';
-      practiceTitle.textContent = `${type} Practice`;
-      currentQuestions = shuffleArray(getQuestionsByType(type)).slice(0, totalQuestions);
-      currentQuestionIndex = correctAnswers = 0;
-      timeRemaining = 600;
-      updateProgressBar();
-      startTimer();
-      showQuestion();
-      toggleCalculatorBtn.style.display = type === 'Math' ? 'block' : 'none';
-    }
-
-    function getQuestionsByType(type) {
-      return {
-        Math: mathQuestions,
-        Verbal: verbalQuestions,
-        Writing: writingQuestions
-      }[type] || [];
-    }
-
-    function shuffleArray(array) {
-      return array.sort(() => Math.random() - 0.5);
-    }
-
-    function showQuestion() {
-      if (currentQuestionIndex >= totalQuestions) {
-        finishPractice();
-        return;
-      }
-      const question = currentQuestions[currentQuestionIndex];
-      questionLabel.textContent = question.text;
-      optionButtons.innerHTML = '';
-      feedbackLabel.textContent = '';
-      nextButton.style.display = 'none';
-
-      // Remove any previous passage or question number elements
-      document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
-
-      if (question.hasPassage) {
-        const passageEl = document.createElement('div');
-        passageEl.className = 'passage-container';
-        passageEl.textContent = question.passage;
-        practiceView.insertBefore(passageEl, questionLabel);
-      }
-
-      const questionNumberEl = document.createElement('div');
-      questionNumberEl.className = 'question-number';
-      questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
-      practiceView.insertBefore(questionNumberEl, questionLabel);
-
-      question.options.forEach((opt, idx) => {
-        const btn = document.createElement('button');
-        btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
-        btn.addEventListener('click', () => checkAnswer(opt));
-        optionButtons.appendChild(btn);
-      });
-      updateProgressBar();
-    }
-
-    function checkAnswer(answer) {
-      const question = currentQuestions[currentQuestionIndex];
-      const isCorrect = answer === question.correctAnswer;
-      feedbackLabel.textContent = isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${question.correctAnswer}`;
-      feedbackLabel.style.color = isCorrect ? '#4CAF50' : '#F44336';
-      if (isCorrect) correctAnswers++;
-      currentQuestionIndex++;
-      nextButton.style.display = 'block';
-      optionButtons.querySelectorAll('button').forEach(btn => btn.disabled = true);
-      updateProgressBar();
-    }
-
-    function updateProgressBar() {
-      progressBar.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
-    }
-
-    function startTimer() {
-      clearInterval(timerInterval);
-      updateTimerDisplay();
-      timerInterval = setInterval(() => {
-        if (timeRemaining > 0) {
-          timeRemaining--;
-          updateTimerDisplay();
-        } else {
-          clearInterval(timerInterval);
-          finishPractice();
-        }
-      }, 1000);
-    }
-
-    function updateTimerDisplay() {
-      const minutes = Math.floor(timeRemaining / 60);
-      const seconds = timeRemaining % 60;
-      timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-    function finishPractice() {
-      clearInterval(timerInterval);
-      const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
-      // Collect the numeric IDs from the questions used in this test
-      const questionIDs = currentQuestions.map(q => q.id);
-      const user = auth.currentUser;
-      if (user) {
-        const testData = {
-          type: currentPractice,
-          score: scorePercentage,
-          correctAnswers,
-          totalQuestions,
-          date: new Date().toISOString(),
-          questionIDs: questionIDs  // New: Array of question numeric IDs
-        };
-        window.satPracticeStorage.saveCompletedTest(testData);
-        alert(`Practice complete! Your score: ${scorePercentage}%. Test saved to your account.`);
-      } else {
-        alert(`Practice complete! Your score: ${scorePercentage}%. (Sign in to save your results)`);
-      }
-      showMainMenu();
-    }
-
-    function showMainMenu() {
-      mainMenu.style.display = 'block';
-      practiceView.style.display = 'none';
-      currentQuestionIndex = correctAnswers = 0;
-      timeRemaining = 600;
-      progressBar.style.width = '0%';
-      feedbackLabel.textContent = '';
-      timeDisplay.textContent = '10:00';
-      questionLabel.textContent = '';
-      optionButtons.innerHTML = '';
-      nextButton.style.display = 'none';
-      document.getElementById('dosCalculator').style.display = 'none';
-    }
-
-    function toggleCalculator() {
-      const calculator = document.getElementById('dosCalculator');
-      calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
-    }
-
-    // ============== TEST TABS FUNCTIONALITY ==============
+    // ----- TEST TABS FUNCTIONALITY -----
     const activeTab = document.getElementById('activeTab');
     const pastTab = document.getElementById('pastTab');
 
@@ -621,7 +253,6 @@
       setActiveTab(activeTab);
       loadUpcomingTests();
     };
-
     pastTab.onclick = () => {
       setActiveTab(pastTab);
       loadPastTests();
@@ -633,7 +264,6 @@
       tab.classList.add('active');
     }
 
-    // Load upcoming tests (assigned tests)
     function loadUpcomingTests() {
       const testsList = document.getElementById('testsList');
       testsList.innerHTML = "Loading upcoming tests...";
@@ -659,7 +289,6 @@
       }
     }
 
-    // Load past tests (completed tests)
     function loadPastTests() {
       const testsList = document.getElementById('testsList');
       testsList.innerHTML = "Loading past tests...";
@@ -681,7 +310,7 @@
       });
     }
 
-    // ============== SETTINGS MENU ==============
+    // ----- SETTINGS MENU -----
     const settingsMenu = document.getElementById('settingsMenu');
     const settingsOutput = document.getElementById('settingsOutput');
 
@@ -725,7 +354,7 @@
         });
     };
 
-    // ============== ADMIN FUNCTIONALITY ==============
+    // ----- ADMIN FUNCTIONALITY -----
     document.getElementById('btnAdminLogin').onclick = () => {
       if (!auth.currentUser) {
         alert("You must be signed in to become an admin.");
@@ -751,7 +380,6 @@
           let html = '';
           if (data) {
             for (const uid in data) {
-              // Get the profile data if available
               const profile = data[uid].profile;
               const name = (profile && profile.name) ? profile.name : 'Unknown';
               html += `<div>`;

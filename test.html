@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SAT Prep - Test</title>
+  <style>
+    :root {
+      --primary-color: #4a6ee0;
+      --secondary-color: #f0f4f8;
+      --text-color: #333;
+      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    header {
+      background-color: white;
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .logo {
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+    }
+    .user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+    .user-info button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: 5px;
+      background-color: var(--primary-color);
+      color: white;
+      cursor: pointer;
+    }
+    h1 { font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem; }
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .progress-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .progress-bar {
+      flex-grow: 1;
+      height: 8px;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      margin: 0 1rem;
+      overflow: hidden;
+      min-width: 100px;
+    }
+    .progress {
+      height: 100%;
+      background-color: var(--primary-color);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    #questionLabel {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    #optionButtons button {
+      background-color: white;
+      color: var(--text-color);
+      border: 1px solid #e0e0e0;
+      margin: 0.5rem 0;
+      text-align: left;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+    #optionButtons button:hover {
+      background-color: var(--secondary-color);
+    }
+    #feedbackLabel {
+      margin-top: 1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    .passage-container {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .question-number {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    /* Calculator Styles */
+    #dosCalculator {
+      position: fixed;
+      top: 50px;
+      right: 20px;
+      background-color: #f8f9fa;
+      color: #333;
+      padding: 20px;
+      border: 2px solid #4a6ee0;
+      border-radius: 12px;
+      font-family: 'Courier New', monospace;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    #calculatorDisplay {
+      background-color: #222;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: right;
+      color: #0f0;
+      font-size: 1.5rem;
+      border-radius: 8px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      height: 50px;
+      display: flex;
+      align-items: center;
+    }
+    #dosCalculator button {
+      width: 60px;
+      height: 60px;
+      margin: 5px;
+      background-color: #4a6ee0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    #dosCalculator button:hover {
+      background-color: #3558b2;
+      transform: scale(1.05);
+    }
+    #dosCalculator button:active {
+      transform: scale(0.95);
+    }
+  </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database-compat.js"></script>
+  <!-- External question and utility files -->
+  <script src="math-questions.js"></script>
+  <script src="verbal-questions.js"></script>
+  <script src="writing-questions.js"></script>
+  <script src="dos-calculator.js"></script>
+  <script src="storage.js"></script>
+  <script>
+    // Firebase configuration and initialization
+    const firebaseConfig = {
+      apiKey: "AIzaSyD9j0rXC-5rTjJOPgYYFDpi_nc9hevLDLg",
+      authDomain: "sat-practice-de760.firebaseapp.com",
+      databaseURL: "https://sat-practice-de760-default-rtdb.firebaseio.com",
+      projectId: "sat-practice-de760",
+      appId: "1:324343144842:web:83ec350e3e72b5b9466873"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+  </script>
+</head>
+<body>
+  <header class="container">
+    <div class="logo">SAT Prep</div>
+    <div class="user-info">
+      <span id="userName">Guest</span>
+      <img id="userAvatar" src="https://via.placeholder.com/40" alt="User Avatar">
+      <button id="signInBtn">Sign In with Google</button>
+      <button id="signOutBtn" style="display:none;">Sign Out</button>
+      <!-- A Home button to return to the landing page -->
+      <button onclick="window.location.href='index.html'">Home</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="practiceView" class="card">
+      <button id="backButton">Back to Menu</button>
+      <h2 id="practiceTitle"></h2>
+      <div class="progress-container">
+        <span id="questionNumber"></span>
+        <div class="progress-bar">
+          <div id="progressBar" class="progress"></div>
+        </div>
+        <span id="timeRemaining">10:00</span>
+      </div>
+      <p id="questionLabel"></p>
+      <div id="optionButtons"></div>
+      <p id="feedbackLabel"></p>
+      <button id="nextButton">Next Question</button>
+      <button id="toggleCalculator">Toggle Calculator</button>
+    </section>
+  </main>
+
+  <!-- Calculator -->
+  <div id="dosCalculator">
+    <div id="calculatorDisplay">0</div>
+    <div>
+      <button data-action="clear">C</button>
+      <button data-digit="7">7</button>
+      <button data-digit="8">8</button>
+      <button data-digit="9">9</button>
+      <button data-operator="/">/</button>
+    </div>
+    <div>
+      <button data-digit="4">4</button>
+      <button data-digit="5">5</button>
+      <button data-digit="6">6</button>
+      <button data-operator="*">X</button>
+    </div>
+    <div>
+      <button data-digit="1">1</button>
+      <button data-digit="2">2</button>
+      <button data-digit="3">3</button>
+      <button data-operator="-">-</button>
+    </div>
+    <div>
+      <button data-digit="0">0</button>
+      <button data-action="decimal">.</button>
+      <button data-operator="=">=</button>
+      <button data-operator="+">+</button>
+    </div>
+  </div>
+
+  <script>
+    // ----- AUTHENTICATION SETUP -----
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const signInBtn = document.getElementById('signInBtn');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const userNameEl = document.getElementById('userName');
+    const userAvatarEl = document.getElementById('userAvatar');
+
+    signInBtn.onclick = () => {
+      auth.signInWithPopup(provider).catch(err => console.error('SignIn failed:', err));
+    };
+    signOutBtn.onclick = () => {
+      auth.signOut().catch(err => console.error('SignOut failed:', err));
+    };
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        userNameEl.textContent = user.displayName || 'User';
+        userAvatarEl.src = user.photoURL || 'https://via.placeholder.com/40';
+        signInBtn.style.display = 'none';
+        signOutBtn.style.display = 'inline-block';
+        db.ref('users/' + user.uid + '/profile').set({
+          name: user.displayName,
+          email: user.email
+        });
+      } else {
+        userNameEl.textContent = 'Guest';
+        userAvatarEl.src = 'https://via.placeholder.com/40';
+        signInBtn.style.display = 'inline-block';
+        signOutBtn.style.display = 'none';
+      }
+    });
+
+    // ----- TEST-TAKING FUNCTIONALITY -----
+    const practiceView = document.getElementById('practiceView');
+    const practiceTitle = document.getElementById('practiceTitle');
+    const questionLabel = document.getElementById('questionLabel');
+    const optionButtons = document.getElementById('optionButtons');
+    const feedbackLabel = document.getElementById('feedbackLabel');
+    const nextButton = document.getElementById('nextButton');
+    const progressBar = document.getElementById('progressBar');
+    const timeDisplay = document.getElementById('timeRemaining');
+    const toggleCalculatorBtn = document.getElementById('toggleCalculator');
+    const backButton = document.getElementById('backButton');
+
+    // The back button simply returns to the main menu
+    backButton.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+    nextButton.addEventListener('click', showQuestion);
+    toggleCalculatorBtn.addEventListener('click', toggleCalculator);
+
+    let currentPractice, currentQuestions, timerInterval;
+    let currentQuestionIndex = 0, correctAnswers = 0, timeRemaining = 600;
+    const totalQuestions = 5;
+
+    function startPractice(type) {
+      currentPractice = type;
+      practiceTitle.textContent = `${type} Practice`;
+      currentQuestions = shuffleArray(getQuestionsByType(type)).slice(0, totalQuestions);
+      currentQuestionIndex = correctAnswers = 0;
+      timeRemaining = 600;
+      updateProgressBar();
+      startTimer();
+      showQuestion();
+      toggleCalculatorBtn.style.display = type === 'Math' ? 'block' : 'none';
+    }
+
+    function getQuestionsByType(type) {
+      return {
+        Math: mathQuestions,
+        Verbal: verbalQuestions,
+        Writing: writingQuestions
+      }[type] || [];
+    }
+
+    function shuffleArray(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function showQuestion() {
+      if (currentQuestionIndex >= totalQuestions) {
+        finishPractice();
+        return;
+      }
+      const question = currentQuestions[currentQuestionIndex];
+      questionLabel.textContent = question.text;
+      optionButtons.innerHTML = '';
+      feedbackLabel.textContent = '';
+      nextButton.style.display = 'none';
+
+      // Remove any previous passage or question number elements
+      document.querySelectorAll('.passage-container, .question-number').forEach(el => el.remove());
+
+      if (question.hasPassage) {
+        const passageEl = document.createElement('div');
+        passageEl.className = 'passage-container';
+        passageEl.textContent = question.passage;
+        practiceView.insertBefore(passageEl, questionLabel);
+      }
+
+      const questionNumberEl = document.createElement('div');
+      questionNumberEl.className = 'question-number';
+      questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+      practiceView.insertBefore(questionNumberEl, questionLabel);
+
+      question.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
+        btn.addEventListener('click', () => checkAnswer(opt));
+        optionButtons.appendChild(btn);
+      });
+      updateProgressBar();
+    }
+
+    function checkAnswer(answer) {
+      const question = currentQuestions[currentQuestionIndex];
+      const isCorrect = answer === question.correctAnswer;
+      feedbackLabel.textContent = isCorrect ? "Correct!" : `Incorrect. The correct answer is: ${question.correctAnswer}`;
+      feedbackLabel.style.color = isCorrect ? '#4CAF50' : '#F44336';
+      if (isCorrect) correctAnswers++;
+      currentQuestionIndex++;
+      nextButton.style.display = 'block';
+      optionButtons.querySelectorAll('button').forEach(btn => btn.disabled = true);
+      updateProgressBar();
+    }
+
+    function updateProgressBar() {
+      progressBar.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        if (timeRemaining > 0) {
+          timeRemaining--;
+          updateTimerDisplay();
+        } else {
+          clearInterval(timerInterval);
+          finishPractice();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function finishPractice() {
+      clearInterval(timerInterval);
+      const scorePercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+      const questionIDs = currentQuestions.map(q => q.id);
+      const user = auth.currentUser;
+      if (user) {
+        const testData = {
+          type: currentPractice,
+          score: scorePercentage,
+          correctAnswers,
+          totalQuestions,
+          date: new Date().toISOString(),
+          questionIDs: questionIDs
+        };
+        window.satPracticeStorage.saveCompletedTest(testData);
+        alert(`Practice complete! Your score: ${scorePercentage}%. Test saved to your account.`);
+      } else {
+        alert(`Practice complete! Your score: ${scorePercentage}%. (Sign in to save your results)`);
+      }
+      window.location.href = 'index.html';
+    }
+
+    function toggleCalculator() {
+      const calculator = document.getElementById('dosCalculator');
+      calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // On page load, read the query parameter and start the appropriate practice test
+    window.addEventListener('load', () => {
+      const params = new URLSearchParams(window.location.search);
+      const type = params.get('type');
+      if (type) {
+        startPractice(type);
+      } else {
+        alert('No practice type specified.');
+      }
+    });
+  </script>
+</body>
+</html>

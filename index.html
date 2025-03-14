@@ -1,417 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>SAT Prep</title>
-  <style>
-    :root {
-      --primary-color: #4a6ee0;
-      --secondary-color: #f0f4f8;
-      --text-color: #333;
-      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: var(--font-family);
-      background-color: var(--secondary-color);
-      color: var(--text-color);
-      line-height: 1.6;
-      font-size: 16px;
-    }
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    header {
-      background-color: white;
-      padding: 1rem 0;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .logo {
-      color: var(--primary-color);
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    .user-info {
-      display: flex;
-      align-items: center;
-    }
-    .user-info img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-left: 10px;
-    }
-    .user-info button {
-      margin-left: 10px;
-      padding: 5px 10px;
-      font-size: 0.9rem;
-      border: none;
-      border-radius: 5px;
-      background-color: var(--primary-color);
-      color: white;
-      cursor: pointer;
-    }
-    h1 { font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem; }
-    .card {
-      background-color: white;
-      border-radius: 8px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .tab-container {
-      display: flex;
-      background-color: #e0e0e0;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-    .tab {
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-    }
-    .tab.active {
-      background-color: var(--primary-color);
-      color: white;
-    }
-    button {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      margin: 10px 0;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 20px;
-      transition: background-color 0.3s ease;
-      width: 100%;
-    }
-    button:hover { background-color: #3558b2; }
-    .practice-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .practice-item .icon {
-      font-size: 2rem;
-      margin-right: 1rem;
-      width: 50px;
-      height: 50px;
-      min-width: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--secondary-color);
-      border-radius: 25px;
-    }
-  </style>
-  <!-- Firebase SDKs using compat versions -->
-  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database-compat.js"></script>
-  <script>
-    // Firebase configuration and initialization
-    const firebaseConfig = {
-      apiKey: "AIzaSyD9j0rXC-5rTjJOPgYYFDpi_nc9hevLDLg",
-      authDomain: "sat-practice-de760.firebaseapp.com",
-      databaseURL: "https://sat-practice-de760-default-rtdb.firebaseio.com",
-      projectId: "sat-practice-de760",
-      appId: "1:324343144842:web:83ec350e3e72b5b9466873"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-  </script>
-  <!-- Utility scripts -->
-  <script src="popup.js"></script>
-  <script src="storage.js"></script>
+  <meta charset="UTF-8" />
+  <title>SAT Practice - Campaign Page</title>
+  <!-- Link to external CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="container">
-    <div class="logo">SAT Prep</div>
-    <div class="user-info">
-      <span id="userName">Guest</span>
-      <img id="userAvatar" src="https://via.placeholder.com/40" alt="User Avatar">
-      <button id="signInBtn">Sign In with Google</button>
-      <button id="signOutBtn" style="display:none;">Sign Out</button>
-      <button id="openSettings">Settings</button>
-    </div>
-  </header>
 
-  <main class="container" id="mainContent">
-    <section id="mainMenu">
-      <h1>Welcome! Good luck on test day!</h1>
-      <div class="card">
-        <div class="section-header">
-          <h2>Your Tests</h2>
-          <div class="tab-container">
-            <div class="tab active" id="activeTab">Active</div>
-            <div class="tab" id="pastTab">Past</div>
-          </div>
-        </div>
-        <p>You may have an upcoming test assigned to you.</p>
-      </div>
-      <!-- Container for displaying tests -->
-      <div id="testsList"></div>
-      <div class="card">
-        <div class="section-header">
-          <h2>Practice and Prepare</h2>
-          <div class="tab-container">
-            <div class="tab active">Active</div>
-            <div class="tab">Past</div>
-          </div>
-        </div>
-        <!-- The practice buttons now simply redirect to test.html, passing the practice type -->
-        <div class="practice-item">
-          <span class="icon">📐</span>
-          <button onclick="window.location.href='test.html?type=Math'">Math Practice</button>
-        </div>
-        <div class="practice-item">
-          <span class="icon">📚</span>
-          <button onclick="window.location.href='test.html?type=Verbal'">Verbal Practice</button>
-        </div>
-        <div class="practice-item">
-          <span class="icon">✍️</span>
-          <button onclick="window.location.href='test.html?type=Writing'">Writing Practice</button>
-        </div>
-      </div>
-    </section>
+  <!-- Page container -->
+  <div class="page-container">
 
-    <!-- Admin Panel (unchanged) -->
-    <section id="adminArea" class="card">
-      <h2>Admin Panel</h2>
-      <button id="refreshAdminData">Refresh Data</button>
-      <div id="adminContent"></div>
-    </section>
-  </main>
+    <!-- Top Navigation / Header -->
+    <header class="top-nav">
+      <nav>
+        <ul>
+          <li><a href="#">Reading</a></li>
+          <li><a href="#">Math</a></li>
+          <li><a href="#">Writing</a></li>
+          <li><a href="#">User</a></li>
+        </ul>
+      </nav>
+    </header>
 
-  <!-- Settings Modal -->
-  <div id="settingsMenu">
-    <div id="settingsContent">
-      <h2>Settings</h2>
-      <button id="btnViewSession">View Saved Practice Session</button>
-      <button id="btnClearSession">Clear Saved Practice Session</button>
-      <button id="btnViewTests">View Completed Tests</button>
-      <button id="btnClearTests">Clear Completed Tests</button>
-      <!-- New Admin Login Button -->
-      <button id="btnAdminLogin">Admin Login</button>
-      <button id="btnCloseSettings">Close</button>
-      <div id="settingsOutput"></div>
-    </div>
+    <!-- Main content area -->
+    <main class="main-content">
+      <!-- Floating side panel (user stats) -->
+      <aside class="stats-window start-hidden" id="statsWindow">
+        <div class="rank-image" id="rankImage">
+          <!-- Red area: rank image/video -->
+          <img 
+            src="https://via.placeholder.com/300x150.png?text=Rank+Image" 
+            alt="Rank Placeholder"
+          />
+        </div>
+
+        <div class="rank-title" id="rankTitle">
+          <!-- Purple area: rank title text -->
+          <h2>Rank Title: Rookie</h2>
+        </div>
+
+        <div class="level-indicator" id="levelIndicator">
+          <!-- Orange area: level amount text -->
+          <p>Level: <span id="userLevel">1</span></p>
+        </div>
+
+        <div class="progress-bar" id="progressBar">
+          <!-- Yellow area: progress bar container -->
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="stats-buttons">
+          <!-- Blue area: total area of buttons -->
+          <button onclick="increaseProgress()">Increase Progress</button>
+          <button onclick="resetProgress()">Reset Progress</button>
+        </div>
+
+        <div class="stats-screen">
+          <!-- Green area: user stats screen, more info can go here -->
+          <h3>User Statistics</h3>
+          <p>Total Questions Answered: <span id="totalAnswered">0</span></p>
+          <p>Accuracy: <span id="accuracy">0%</span></p>
+        </div>
+      </aside>
+
+      <!-- Campaign content area -->
+      <section class="campaign-content start-hidden" id="campaignContent">
+        <h1>Campaign</h1>
+        <p>
+          Welcome to the SAT Practice Campaign page. This area can include
+          details about upcoming practice sessions, past scores, or any
+          other relevant information. 
+        </p>
+
+        <p>
+          The large wireframe boxes you drew can be modeled here as
+          placeholders for tests, progress, or new modules that appear
+          dynamically when the page loads or when users navigate.
+        </p>
+      </section>
+    </main>
+
   </div>
 
-  <script>
-    // ----- AUTHENTICATION SETUP -----
-    const provider = new firebase.auth.GoogleAuthProvider();
-    const signInBtn = document.getElementById('signInBtn');
-    const signOutBtn = document.getElementById('signOutBtn');
-    const userNameEl = document.getElementById('userName');
-    const userAvatarEl = document.getElementById('userAvatar');
-
-    signInBtn.onclick = () => {
-      auth.signInWithPopup(provider).catch(err => console.error('SignIn failed:', err));
-    };
-    signOutBtn.onclick = () => {
-      auth.signOut().catch(err => console.error('SignOut failed:', err));
-    };
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        userNameEl.textContent = user.displayName || 'User';
-        userAvatarEl.src = user.photoURL || 'https://via.placeholder.com/40';
-        signInBtn.style.display = 'none';
-        signOutBtn.style.display = 'inline-block';
-        // Save/update user profile in the database
-        db.ref('users/' + user.uid + '/profile').set({
-          name: user.displayName,
-          email: user.email
-        });
-      } else {
-        userNameEl.textContent = 'Guest';
-        userAvatarEl.src = 'https://via.placeholder.com/40';
-        signInBtn.style.display = 'inline-block';
-        signOutBtn.style.display = 'none';
-        // Hide admin panel when signed out
-        document.getElementById('adminArea').style.display = 'none';
-      }
-    });
-
-    // ----- TEST TABS FUNCTIONALITY -----
-    const activeTab = document.getElementById('activeTab');
-    const pastTab = document.getElementById('pastTab');
-
-    activeTab.onclick = () => {
-      setActiveTab(activeTab);
-      loadUpcomingTests();
-    };
-    pastTab.onclick = () => {
-      setActiveTab(pastTab);
-      loadPastTests();
-    };
-
-    function setActiveTab(tab) {
-      activeTab.classList.remove('active');
-      pastTab.classList.remove('active');
-      tab.classList.add('active');
-    }
-
-    function loadUpcomingTests() {
-      const testsList = document.getElementById('testsList');
-      testsList.innerHTML = "Loading upcoming tests...";
-      if (window.satPracticeStorage.getAssignedTests) {
-        window.satPracticeStorage.getAssignedTests(tests => {
-          if (tests.length > 0) {
-            let html = "<h3>Upcoming Tests</h3><ul>";
-            tests.forEach(test => {
-              html += `<li>${test.type} Test scheduled for ${new Date(test.date).toLocaleString()}`;
-              if (test.questionIDs) {
-                html += `<br><small>Questions: ${test.questionIDs.join(', ')}</small>`;
-              }
-              html += "</li>";
-            });
-            html += "</ul>";
-            testsList.innerHTML = html;
-          } else {
-            testsList.innerHTML = "No upcoming tests found.";
-          }
-        });
-      } else {
-        testsList.innerHTML = "Upcoming tests functionality is not available.";
-      }
-    }
-
-    function loadPastTests() {
-      const testsList = document.getElementById('testsList');
-      testsList.innerHTML = "Loading past tests...";
-      window.satPracticeStorage.getCompletedTests(tests => {
-        if (tests.length > 0) {
-          let html = "<h3>Past Tests</h3><ul>";
-          tests.forEach(test => {
-            html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%`;
-            if (test.questionIDs) {
-              html += `<br><small>Questions: ${test.questionIDs.join(', ')}</small>`;
-            }
-            html += "</li>";
-          });
-          html += "</ul>";
-          testsList.innerHTML = html;
-        } else {
-          testsList.innerHTML = "No past tests found.";
-        }
-      });
-    }
-
-    // ----- SETTINGS MENU -----
-    const settingsMenu = document.getElementById('settingsMenu');
-    const settingsOutput = document.getElementById('settingsOutput');
-
-    document.getElementById('openSettings').onclick = () => {
-      settingsMenu.style.display = 'flex';
-    };
-    document.getElementById('btnCloseSettings').onclick = () => {
-      settingsMenu.style.display = 'none';
-    };
-
-    document.getElementById('btnViewSession').onclick = () => {
-      window.satPracticeStorage.loadPracticeSession(session => {
-        settingsOutput.innerText = session
-          ? JSON.stringify(session, null, 2)
-          : 'No saved practice session found.';
-      });
-    };
-
-    document.getElementById('btnClearSession').onclick = () => {
-      window.satPracticeStorage.clearPracticeSession();
-      settingsOutput.innerText = 'Practice session cleared.';
-    };
-
-    document.getElementById('btnViewTests').onclick = () => {
-      window.satPracticeStorage.getCompletedTests(tests => {
-        settingsOutput.innerText = tests.length
-          ? JSON.stringify(tests, null, 2)
-          : 'No completed tests found.';
-      });
-    };
-
-    document.getElementById('btnClearTests').onclick = () => {
-      const user = auth.currentUser;
-      if (!user) {
-        settingsOutput.innerText = 'Not signed in. No tests to clear.';
-        return;
-      }
-      firebase.database().ref(`users/${user.uid}/completedTests`).remove()
-        .then(() => {
-          settingsOutput.innerText = 'Completed tests cleared.';
-        });
-    };
-
-    // ----- ADMIN FUNCTIONALITY -----
-    document.getElementById('btnAdminLogin').onclick = () => {
-      if (!auth.currentUser) {
-        alert("You must be signed in to become an admin.");
-        return;
-      }
-      const code = prompt("Enter the 4-digit admin code:");
-      if (code === "1234") {  // Change this code as needed.
-        window.isAdmin = true;
-        alert("Admin privileges granted.");
-        document.getElementById('adminArea').style.display = 'block';
-        fetchAdminData();
-      } else {
-        alert("Incorrect code.");
-      }
-    };
-
-    document.getElementById('refreshAdminData').onclick = fetchAdminData;
-
-    function fetchAdminData() {
-      firebase.database().ref('users').once('value')
-        .then(snapshot => {
-          const data = snapshot.val();
-          let html = '';
-          if (data) {
-            for (const uid in data) {
-              const profile = data[uid].profile;
-              const name = (profile && profile.name) ? profile.name : 'Unknown';
-              html += `<div>`;
-              html += `<strong>User:</strong> ${name} (${uid})<br>`;
-              if (data[uid].completedTests) {
-                html += `<ul>`;
-                for (const testKey in data[uid].completedTests) {
-                  const test = data[uid].completedTests[testKey];
-                  html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%<br>
-                           <small>Questions: ${test.questionIDs.join(', ')}</small></li>`;
-                }
-                html += `</ul>`;
-              } else {
-                html += `<p>No completed tests.</p>`;
-              }
-              html += `</div>`;
-            }
-          } else {
-            html = '<p>No user data found.</p>';
-          }
-          document.getElementById('adminContent').innerHTML = html;
-        })
-        .catch(err => {
-          console.error("Error fetching admin data:", err);
-        });
-    }
-
-    // On initial load, show upcoming tests by default
-    window.addEventListener('load', () => {
-      setActiveTab(activeTab);
-      loadUpcomingTests();
-    });
-  </script>
+  <!-- Link to external JS -->
+  <script src="script.js"></script>
 </body>
 </html>

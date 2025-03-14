@@ -1,0 +1,156 @@
+/* RESET (optional minimal reset) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Basic Page Layout */
+body {
+  font-family: sans-serif;
+  background: #f9f9f9;
+}
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Navigation */
+.top-nav {
+  background: #333;
+  color: #fff;
+}
+.top-nav ul {
+  display: flex;
+  list-style: none;
+  justify-content: flex-start;
+}
+.top-nav li a {
+  display: block;
+  padding: 1rem;
+  color: #fff;
+  text-decoration: none;
+}
+.top-nav li a:hover {
+  background: #555;
+}
+
+/* Main Content Layout */
+.main-content {
+  flex: 1;
+  display: flex;
+  position: relative; /* so we can position the aside as needed */
+  padding: 1rem;
+}
+
+/* Floating Side Panel (User Stats Window) */
+.stats-window {
+  background: #d3d3d3; /* Gray area representing entire floating window */
+  width: 300px;
+  padding: 1rem;
+  border-radius: 4px;
+
+  /* Make it float on the left or right as you prefer */
+  margin-right: 1rem;
+  position: relative;
+}
+
+/* Example: if you want it pinned to the left with absolute or fixed positioning */
+.stats-window.fixed {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+}
+
+/* Rank Image (Red area) */
+.rank-image {
+  background: #ff9999; /* just to visualize the red area */
+  border: 2px solid #000;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.rank-image img {
+  max-width: 100%;
+}
+
+/* Rank Title (Purple area) */
+.rank-title {
+  background: #c99ff7; /* purple visualization */
+  text-align: center;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Level Indicator (Orange area) */
+.level-indicator {
+  background: #ffca88; /* orange visualization */
+  text-align: center;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Progress Bar Container (Yellow area) */
+.progress-bar {
+  background: #fff78a; /* yellow background for illustration */
+  height: 20px;
+  width: 100%;
+  border: 1px solid #333;
+  margin-bottom: 1rem;
+  position: relative;
+}
+.progress-fill {
+  background: #43a047; /* green fill color */
+  height: 100%;
+  width: 0%;         /* initial width is zero */
+  transition: width 0.5s ease-in-out;
+}
+
+/* Stats Buttons (Blue area) */
+.stats-buttons {
+  background: #87ceeb; /* blue background for illustration */
+  padding: 0.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.stats-buttons button {
+  margin: 0.25rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+/* User Stats Screen (Green area) */
+.stats-screen {
+  background: #a6f7a1; /* green background for illustration */
+  border: 2px solid #000;
+  padding: 0.5rem;
+}
+
+/* Campaign Content */
+.campaign-content {
+  flex: 1;
+  background: #fff;
+  padding: 1rem;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Simple fade/scale animations */
+.start-hidden {
+  opacity: 0;
+  transform: scale(0.95);
+}
+.loaded {
+  animation: fadeInScale 1s forwards;
+}
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

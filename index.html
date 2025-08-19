@@ -113,6 +113,60 @@
       background-color: var(--secondary-color);
       border-radius: 25px;
     }
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .nav-links a {
+      color: var(--primary-color);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--primary-color);
+      transition: all 0.3s ease;
+    }
+    .nav-links a:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    .nav-links a.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    /* Settings Modal Styles */
+    #settingsMenu {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    #settingsContent {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    #settingsOutput {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-top: 1rem;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 0.9rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
   </style>
   <!-- Firebase SDKs using compat versions -->
   <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
@@ -143,45 +197,53 @@
       <img id="userAvatar" src="https://via.placeholder.com/40" alt="User Avatar">
       <button id="signInBtn">Sign In with Google</button>
       <button id="signOutBtn" style="display:none;">Sign Out</button>
-      <button id="openSettings">Settings</button>
+      <button id="openSettings">Account Settings</button>
     </div>
   </header>
 
   <main class="container" id="mainContent">
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <a href="index.html" class="active">Dashboard</a>
+      <a href="practice.html">Practice Hub</a>
+    </div>
+
     <section id="mainMenu">
-      <h1>Welcome! Good luck on test day!</h1>
+      <h1>Dashboard - Analytics & Results</h1>
+      
       <div class="card">
         <div class="section-header">
           <h2>Your Tests</h2>
           <div class="tab-container">
-            <div class="tab active" id="activeTab">Active</div>
-            <div class="tab" id="pastTab">Past</div>
+            <div class="tab active" id="activeTab">Upcoming</div>
+            <div class="tab" id="pastTab">Completed</div>
           </div>
         </div>
-        <p>You may have an upcoming test assigned to you.</p>
+        <p>Track your upcoming tests and review completed test results.</p>
       </div>
+      
       <!-- Container for displaying tests -->
       <div id="testsList"></div>
+      
       <div class="card">
-        <div class="section-header">
-          <h2>Practice and Prepare</h2>
-          <div class="tab-container">
-            <div class="tab active">Active</div>
-            <div class="tab">Past</div>
-          </div>
+        <h2>Performance Analytics</h2>
+        <div id="performanceStats">
+          <p>Sign in to view your detailed performance analytics and progress tracking.</p>
         </div>
-        <!-- The practice buttons now simply redirect to test.html, passing the practice type -->
-        <div class="practice-item">
-          <span class="icon">📐</span>
-          <button onclick="window.location.href='test.html?type=Math'">Math Practice</button>
-        </div>
-        <div class="practice-item">
-          <span class="icon">📚</span>
-          <button onclick="window.location.href='test.html?type=Verbal'">Verbal Practice</button>
-        </div>
-        <div class="practice-item">
-          <span class="icon">✍️</span>
-          <button onclick="window.location.href='test.html?type=Writing'">Writing Practice</button>
+      </div>
+
+      <div class="card">
+        <h2>Quick Actions</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <button onclick="window.location.href='practice.html'" style="background-color: #28a745;">
+            Start Practice Session
+          </button>
+          <button onclick="loadPastTests()" style="background-color: #17a2b8;">
+            View Test History
+          </button>
+          <button onclick="showPerformanceDetails()" style="background-color: #ffc107; color: #333;">
+            Performance Report
+          </button>
         </div>
       </div>
     </section>
@@ -194,15 +256,14 @@
     </section>
   </main>
 
-  <!-- Settings Modal -->
+  <!-- Account Settings Modal -->
   <div id="settingsMenu">
     <div id="settingsContent">
-      <h2>Settings</h2>
-      <button id="btnViewSession">View Saved Practice Session</button>
-      <button id="btnClearSession">Clear Saved Practice Session</button>
-      <button id="btnViewTests">View Completed Tests</button>
-      <button id="btnClearTests">Clear Completed Tests</button>
-      <!-- New Admin Login Button -->
+      <h2>Account Settings</h2>
+      <button id="btnViewTests">View Test History</button>
+      <button id="btnClearTests">Clear Test History</button>
+      <button id="btnBillingInfo">Billing Information</button>
+      <!-- Admin Login Button -->
       <button id="btnAdminLogin">Admin Login</button>
       <button id="btnCloseSettings">Close</button>
       <div id="settingsOutput"></div>
@@ -270,7 +331,7 @@
       if (window.satPracticeStorage.getAssignedTests) {
         window.satPracticeStorage.getAssignedTests(tests => {
           if (tests.length > 0) {
-            let html = "<h3>Upcoming Tests</h3><ul>";
+            let html = "<div class='card'><h3>Upcoming Tests</h3><ul>";
             tests.forEach(test => {
               html += `<li>${test.type} Test scheduled for ${new Date(test.date).toLocaleString()}`;
               if (test.questionIDs) {
@@ -278,23 +339,23 @@
               }
               html += "</li>";
             });
-            html += "</ul>";
+            html += "</ul></div>";
             testsList.innerHTML = html;
           } else {
-            testsList.innerHTML = "No upcoming tests found.";
+            testsList.innerHTML = "<div class='card'><p>No upcoming tests found.</p></div>";
           }
         });
       } else {
-        testsList.innerHTML = "Upcoming tests functionality is not available.";
+        testsList.innerHTML = "<div class='card'><p>Upcoming tests functionality is not available.</p></div>";
       }
     }
 
     function loadPastTests() {
       const testsList = document.getElementById('testsList');
-      testsList.innerHTML = "Loading past tests...";
+      testsList.innerHTML = "Loading completed tests...";
       window.satPracticeStorage.getCompletedTests(tests => {
         if (tests.length > 0) {
-          let html = "<h3>Past Tests</h3><ul>";
+          let html = "<div class='card'><h3>Completed Tests</h3><ul>";
           tests.forEach(test => {
             html += `<li>${test.type} Test on ${new Date(test.date).toLocaleString()} - Score: ${test.score}%`;
             if (test.questionIDs) {
@@ -302,15 +363,50 @@
             }
             html += "</li>";
           });
-          html += "</ul>";
+          html += "</ul></div>";
           testsList.innerHTML = html;
         } else {
-          testsList.innerHTML = "No past tests found.";
+          testsList.innerHTML = "<div class='card'><p>No completed tests found.</p></div>";
         }
       });
     }
 
-    // ----- SETTINGS MENU -----
+    function showPerformanceDetails() {
+      window.satPracticeStorage.getCompletedTests(tests => {
+        const performanceStats = document.getElementById('performanceStats');
+        if (tests.length > 0) {
+          const totalTests = tests.length;
+          const totalScore = tests.reduce((sum, test) => sum + parseFloat(test.score), 0);
+          const averageScore = (totalScore / totalTests).toFixed(1);
+          
+          const mathTests = tests.filter(test => test.type === 'Math');
+          const verbalTests = tests.filter(test => test.type === 'Verbal');
+          const writingTests = tests.filter(test => test.type === 'Writing');
+          
+          let html = `
+            <h3>Performance Summary</h3>
+            <p><strong>Total Tests Completed:</strong> ${totalTests}</p>
+            <p><strong>Average Score:</strong> ${averageScore}%</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem;">
+              <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                <strong>Math</strong><br>${mathTests.length} tests
+              </div>
+              <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                <strong>Verbal</strong><br>${verbalTests.length} tests
+              </div>
+              <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                <strong>Writing</strong><br>${writingTests.length} tests
+              </div>
+            </div>
+          `;
+          performanceStats.innerHTML = html;
+        } else {
+          performanceStats.innerHTML = '<p>No test data available. Complete some practice tests to see your performance analytics.</p>';
+        }
+      });
+    }
+
+    // ----- ACCOUNT SETTINGS MENU -----
     const settingsMenu = document.getElementById('settingsMenu');
     const settingsOutput = document.getElementById('settingsOutput');
 
@@ -319,19 +415,6 @@
     };
     document.getElementById('btnCloseSettings').onclick = () => {
       settingsMenu.style.display = 'none';
-    };
-
-    document.getElementById('btnViewSession').onclick = () => {
-      window.satPracticeStorage.loadPracticeSession(session => {
-        settingsOutput.innerText = session
-          ? JSON.stringify(session, null, 2)
-          : 'No saved practice session found.';
-      });
-    };
-
-    document.getElementById('btnClearSession').onclick = () => {
-      window.satPracticeStorage.clearPracticeSession();
-      settingsOutput.innerText = 'Practice session cleared.';
     };
 
     document.getElementById('btnViewTests').onclick = () => {
@@ -350,8 +433,12 @@
       }
       firebase.database().ref(`users/${user.uid}/completedTests`).remove()
         .then(() => {
-          settingsOutput.innerText = 'Completed tests cleared.';
+          settingsOutput.innerText = 'Test history cleared.';
         });
+    };
+
+    document.getElementById('btnBillingInfo').onclick = () => {
+      settingsOutput.innerText = 'Billing Information:\n\nPlan: Free Tier\nNext Billing Date: N/A\nUsage: Unlimited practice tests\n\nUpgrade to Premium for additional features.';
     };
 
     // ----- ADMIN FUNCTIONALITY -----
@@ -407,10 +494,16 @@
         });
     }
 
-    // On initial load, show upcoming tests by default
+    // On initial load, show upcoming tests by default and load performance data
     window.addEventListener('load', () => {
       setActiveTab(activeTab);
       loadUpcomingTests();
+      // Load performance analytics if user is signed in
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          setTimeout(showPerformanceDetails, 1000); // Small delay to ensure storage is loaded
+        }
+      });
     });
   </script>
 </body>

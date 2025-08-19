@@ -200,8 +200,9 @@
       <img id="userAvatar" src="https://via.placeholder.com/40" alt="User Avatar">
       <button id="signInBtn">Sign In with Google</button>
       <button id="signOutBtn" style="display:none;">Sign Out</button>
-      <!-- A Home button to return to the landing page -->
-      <button onclick="window.location.href='index.html'">Home</button>
+      <!-- Navigation buttons -->
+      <button onclick="window.location.href='index.html'">Dashboard</button>
+      <button onclick="window.location.href='practice.html'">Practice Hub</button>
     </div>
   </header>
 
@@ -299,9 +300,9 @@
     const toggleCalculatorBtn = document.getElementById('toggleCalculator');
     const backButton = document.getElementById('backButton');
 
-    // The back button simply returns to the main menu
+    // The back button returns to the practice hub
     backButton.addEventListener('click', () => {
-      window.location.href = 'index.html';
+      window.location.href = 'practice.html';
     });
     nextButton.addEventListener('click', showQuestion);
     toggleCalculatorBtn.addEventListener('click', toggleCalculator);
@@ -424,7 +425,7 @@
       } else {
         alert(`Practice complete! Your score: ${scorePercentage}%. (Sign in to save your results)`);
       }
-      window.location.href = 'index.html';
+      window.location.href = 'practice.html';
     }
 
     function toggleCalculator() {
